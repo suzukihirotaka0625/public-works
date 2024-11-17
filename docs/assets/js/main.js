@@ -5,6 +5,16 @@ const MENUS = {
     path: '',
     note: '業務で生産性や品質に貢献できる、スキルやツールなどについてまとめたサイトです。',
     children: {
+      about: {
+        title: 'About Me',
+        path: 'about',
+        note: '自分のスキルセットや経験、希望する作業内容、考え方など',
+      },
+      works: {
+        title: '実績',
+        path: 'works',
+        note: '実際に現場で実装したコードをそのままではなく、要点を簡潔にまとめて再現します',
+      },
       tools: {
         title: 'Tools',
         path: 'tools',
@@ -72,7 +82,8 @@ const myUtils = (() => {
     prepareCustomElement,
     parseMenu,
     getCurrentMenu,
-    rootPath: location.host.indexOf('localhost') === -1 ? '/public-works' : '/lolipop/public-works/docs'
+    rootPath: location.host.indexOf('localhost') === -1 ? '/public-works' : '/lolipop/public-works/docs',
+    rootStyle: getComputedStyle(document.querySelector(':root'))
   }
 })()
 

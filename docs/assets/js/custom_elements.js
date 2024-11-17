@@ -6,25 +6,25 @@ class MyMenu extends HTMLElement {
   ul { 
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 10px 0 0;
     display: flex;
-    gap: 32px;
-    height: 24px;
+    flex-wrap: wrap;
+    gap: 4px 32px;
+    min-height: 24px;
     li {
       position: relative;
       display: flex;
-      align-items: center;
       a {
         text-decoration: none;
-        color: #229955;
+        color: var(--link-color);
         display: flex;
       }
     }
-    > li:not(:first-child):before {
+    > li:not(:last-child):after {
       content: '/';
       display: block;
       position: absolute;
-      left: -20px;
+      right: -20px;
       color: #999;
     }
   }
@@ -58,7 +58,7 @@ class MyMenu extends HTMLElement {
     if (!path) return
 
     const menus = myUtils.parseMenu(path)
-console.log({ menus })
+
     menus.forEach((menu, i) => {
       const li = document.createElement('li')
       let titleWrapper = li
@@ -69,7 +69,11 @@ console.log({ menus })
         li.appendChild(a)
       }
       if (i === 0) {
-        titleWrapper.innerHTML = MyMenu.homeSvg(titleWrapper.tagName.toUpperCase() === 'A' ? '#229955' : undefined)
+        titleWrapper.innerHTML = MyMenu.homeSvg(
+          titleWrapper.tagName.toUpperCase() === 'A'
+            ? myUtils.rootStyle.getPropertyValue('--link-color')
+            : undefined
+        )
       } else {
         titleWrapper.appendChild(document.createTextNode(menu.title))
       }
@@ -130,7 +134,7 @@ class PageList extends HTMLElement {
   }
   a {
     text-decoration: none;
-    color: #229955;
+    color: var(--link-color);
   }
   .children {
     display: grid;
