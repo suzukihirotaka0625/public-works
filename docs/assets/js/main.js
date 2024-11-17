@@ -1,14 +1,20 @@
 
 const MENUS = {
   top: {
-    title: 'トップ',
-    path: '/',
+    title: 'My Skills',
+    path: '',
+    note: '業務で生産性や品質に貢献できる、スキルやツールなどについてまとめたサイトです。',
     children: {
       tools: {
         title: 'Tools',
         path: 'tools',
+        note: '実際に業務でも使用している、汎用的なツール類を公開します。',
         children: {
-
+          color: {
+            title: 'カラーコード変換',
+            path: 'color.html',
+            note: '10進数 <-> 16進数(RBG)、RBGA -> RGB の変換です。'
+          }
         }
       }
     }
@@ -35,13 +41,13 @@ const myUtils = (() => {
   }
 
   const parseMenu = (key) => {
-    const keys = key.split('.')
+    const keys = key.replace('.html', '').split('.')
     return keys.reduce((result, key) => {
       if (!(key in result.menu)) {
         throw new Error(`${key} is not exists in menus`)
       }
       const menu = result.menu[key]
-      const path = `${result.path}${menu.path}`
+      const path = `${result.path}/${menu.path}`
       return {
         menu: menu.children,
         path,
@@ -49,19 +55,34 @@ const myUtils = (() => {
       }
     }, { menu: MENUS, path: '', arr: []}).arr
   }
-  
+
+  const getCurrentMenu = (key) => {
+    const keys = key.replace('.html', '').split('.')
+    let menu = { children: MENUS }
+    for (let key of keys) {
+      if (!(key in menu.children)) {
+        throw new Error(`${key} is not exists in menus`)
+      }
+      menu = menu.children[key]
+    }
+    return menu
+  }
+
   return {
     prepareCustomElement,
     parseMenu,
+    getCurrentMenu,
     rootPath: location.host.indexOf('localhost') === -1 ? '/public-works' : '/lolipop/public-works/docs'
   }
 })()
 
 document.addEventListener('DOMContentLoaded', () => {
   // パンクズリストを作成する
-  const menuDom = document.getElementsByTagName('my-menu')
-  if (menuDom.length) {
+  const myMenu = document.getElementsByTagName('my-menu')[0]
+  const pageList = document.getElementsByTagName('page-list')[0]
+  if (myMenu || pageList) {
     const path = location.pathname.replace(myUtils.rootPath, 'top').split('/').filter(v => v).join('.')
-    menuDom[0].setAttribute('path', path)
+    myMenu?.setAttribute('path', path)
+    pageList?.setAttribute('path', path)
   }
 })

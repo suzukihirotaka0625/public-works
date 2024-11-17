@@ -22,7 +22,7 @@ my-header::part(content) {
 }
 
 main {
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   .content {
     width: var(--width-pc);
     margin: auto;

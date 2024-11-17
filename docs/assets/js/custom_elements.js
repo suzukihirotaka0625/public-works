@@ -58,7 +58,7 @@ class MyMenu extends HTMLElement {
     if (!path) return
 
     const menus = myUtils.parseMenu(path)
-
+console.log({ menus })
     menus.forEach((menu, i) => {
       const li = document.createElement('li')
       let titleWrapper = li
@@ -92,7 +92,8 @@ class MyHeader extends HTMLElement {
 `
   static style = `
   header {
-    padding: 1rem;
+    padding: 1rem 1rem 6px;
+    background: #f1f1f1;
     h1 {
       margin: 0 0 .5rem 0;
       padding: 0;
@@ -109,3 +110,109 @@ class MyHeader extends HTMLElement {
 }
 
 customElements.define('my-header', MyHeader)
+
+class PageList extends HTMLElement {
+
+  static content = ``
+  static style = `
+  :host {
+    > div {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+  }
+  h2, h3 {
+    margin: 0;
+  }
+  h2 {
+    font-size: 1.2rem;
+  }
+  a {
+    text-decoration: none;
+    color: #229955;
+  }
+  .children {
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: repeat(2, 1fr);
+    > div {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: .75rem;
+      h3 {
+        font-size: 1.1rem;
+      }
+      p {
+        font-size: .8rem;
+        margin: 6px 0 0;
+      }
+    }
+  }
+  @media screen and (max-width: 640px) {
+  .children {
+    grid-template-columns: 1fr;
+  }
+  `
+
+  static observedAttributes = ['path'];
+
+  #_wrapper
+
+  constructor() {
+    super()
+
+    const { wrapper } = myUtils.prepareCustomElement(PageList, this.attachShadow({mode: "closed"}), { tag: 'div' })
+
+    this.#_wrapper = wrapper
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'path') {
+      this.#_setPageList(newValue)
+    }
+  }
+
+  #_setPageList(path) {
+    if (!path) return
+
+    const menu = myUtils.getCurrentMenu(path)
+
+    const pageWrapper = document.createElement('div')
+    pageWrapper.classList.add('this-page')
+    const pageTitle = document.createElement('h2')
+    pageTitle.textContent = menu.title
+    pageWrapper.appendChild(pageTitle)
+    if (menu.note) {
+      const pageNote = document.createElement('p')
+      pageNote.innerHTML = menu.note
+      pageWrapper.appendChild(pageNote)
+    }
+
+    const childrenWrapper = document.createElement('div')
+    childrenWrapper.classList.add('children')
+
+    Object.values(menu.children).forEach(item => {
+      const card = document.createElement('div')
+      const cardTitle = document.createElement('h3')
+      const link = document.createElement('a')
+      link.textContent = item.title
+      link.href = item.path
+      cardTitle.appendChild(link)
+      card.appendChild(cardTitle)
+
+      if (item.note) {
+        const cardNote = document.createElement('p')
+        cardNote.innerHTML = item.note
+        card.appendChild(cardNote)
+      }
+
+      childrenWrapper.appendChild(card)
+    })
+
+    this.#_wrapper.appendChild(pageWrapper)
+    this.#_wrapper.appendChild(childrenWrapper)
+  }
+}
+
+customElements.define('page-list', PageList)
