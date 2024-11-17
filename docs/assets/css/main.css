@@ -1,0 +1,39 @@
+:root {
+  --link-color: #229955;
+  --width-pc: 800px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: var(--link-color);
+}
+
+my-header::part(content) {
+  width: var(--width-pc);
+  margin: auto;
+}
+
+main {
+  padding: 1rem;
+  .content {
+    width: var(--width-pc);
+    margin: auto;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  main .content {
+    width: 100%;
+  }
+  my-header::part(content) {
+    width: 100%;
+  }
+}
