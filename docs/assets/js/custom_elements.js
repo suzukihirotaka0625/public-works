@@ -132,26 +132,33 @@ class PageList extends HTMLElement {
   h2 {
     font-size: 1.2rem;
   }
-  a {
-    text-decoration: none;
-    color: var(--link-color);
-  }
   .children {
     display: grid;
     gap: .75rem;
     grid-template-columns: repeat(2, 1fr);
-    > div {
+    > a {
+      text-decoration: none;
+      color: #333;
       border: 1px solid #ddd;
       border-radius: 4px;
       padding: .75rem;
-      h3 {
-        font-size: 1.1rem;
+      transition: all .2s ease-in-out;
+      &:hover {
+        border-color: rgb(var(--link-color-rgb) / .8);
+        background-color: rgb(var(--link-color-rgb) / .03);
       }
-      p {
-        font-size: .8rem;
-        margin: 6px 0 0;
+      > div {
+        h3 {
+          font-size: 1.1rem;
+          color: var(--link-color);
+        }
+        p {
+          font-size: .8rem;
+          margin: 6px 0 0;
+        }
       }
     }
+
   }
   @media screen and (max-width: 640px) {
   .children {
@@ -200,18 +207,17 @@ class PageList extends HTMLElement {
       const card = document.createElement('div')
       const cardTitle = document.createElement('h3')
       const link = document.createElement('a')
-      link.textContent = item.title
       link.href = item.path
-      cardTitle.appendChild(link)
+      cardTitle.textContent = item.title
       card.appendChild(cardTitle)
-
+      link.appendChild(card)
       if (item.note) {
         const cardNote = document.createElement('p')
         cardNote.innerHTML = item.note
         card.appendChild(cardNote)
       }
 
-      childrenWrapper.appendChild(card)
+      childrenWrapper.appendChild(link)
     })
 
     this.#_wrapper.appendChild(pageWrapper)
