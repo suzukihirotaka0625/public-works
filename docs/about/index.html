@@ -9,6 +9,34 @@
     <link rel="stylesheet" href="../assets/css/main.css" />
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/custom_elements.js" defer></script>
+    <style>
+      section + section {
+        border-top: 1px solid var(--border-color);
+        margin-top: 2rem;
+        padding-top: 2rem;
+      }
+      ul {
+        margin: 0;
+        padding-left: 1rem;
+        li {
+          padding-bottom: .25rem;
+        }
+      }
+      dt {
+        color: #444;
+        font-weight: 700;
+        border-bottom: 1px dotted #ccc;
+      }
+      dd {
+        padding-block: .5rem;
+        margin-left: 1rem;
+        margin-bottom: 1rem;
+      }
+      span.detail {
+        display: block;
+        font-size: .9rem;
+      }
+    </style>
   </head>
   <body>
     <my-header>
@@ -17,7 +45,73 @@
     <main>
       <div class="content">
         <section>
-          About Me
+          <page-list></page-list>
+        </section>
+        <section>
+          <dl>
+            <dt>契約形態</dt>
+            <dd>フリーランス</dd>
+            <dt>希望職種</dt>
+            <dd>フロントエンドエンジニア、バックエンドエンジニア</dd>
+            <dt>希望する工程</dt>
+            <dd>基本設計、詳細設計、実装、単体テストの実装よりの工程を希望します（専門性を発揮するため）<br/>要件定義、保守・運用は必要に応じて対応いたいます</dd>
+            <dt>得意なスキル（業務で使用するか関係なく随時スキルアップを心がけている）</dt>
+            <dd>
+              <ul>
+                <li>Javascript（React）</li>
+                <li>Typescript</li>
+                <li>CSS</li>
+                <li>HTML</li>
+                <li>SQL</li>
+                <li>単体テスト（Jestなど）</li>
+              </ul>
+            </dd>
+            <dt>現場で経験できたら嬉しい技術</dt>
+            <dd>
+              <ul>
+                <li>アクセシビリティ<span class="detail">今後義務化などで必要になる可能性があり、考慮していない大規模なシステムの場合対応が困難になることが予想されますので、しっかりした知識が必要</span></li>
+                <li>セキュリティ<span class="detail">XSSなどスキルがあっても独自対応せずにライブラリやFWの機能を使うのが鉄則ですが、反面、自分で実装しないため理解が不足しがち</span></li>
+                <li>単体テスト<span class="detail">得意なスキルにもあげましたが、現場でなかなか単体テストを書く機会が少ない</span></li>
+                <li>eslintのルール自作<span class="detail">大抵の必要なルールは既存で存在しており、車輪の再発明をする必要はありませんが、いざ必要となった時のために慣れておきたい</span></li>
+              </ul>
+            </dd>
+            <dt>技術のこだわりや考え方</dt>
+            <dd>
+              <ul>
+                <li>業務における技術の考え方
+                  <span class="detail">技術を使って何を実現したいかが目的ですので、特定の技術や開発手法にこだわりはありません。<br/>
+                  現場のやり方考え方、他者の意見を尊重します</span>
+                </li>
+                <li>
+                  どのような観点で技術を学習するか
+                  <span class="detail">新しいもの難しいものばかりでなく、基本的な技術に精通する<br/>
+                  引き出しを多く持ち、必要に応じて最適な技術を選択できるようにする</span>
+                </li>
+              </ul>
+            </dd>
+            <dt>経歴</dt>
+            <dd>
+              <ul>
+                <li>～2006年<br/>派遣や正社員でヘルプデスク・サーバー運用
+                </li>
+                <li>～2012年<br/>主に正社員で、システム開発。Javaメインで、PHP、jQueryなど
+                </li>
+                <li>2012年～現在<br/>フリーランス</li>
+                <li>2015年<br/>ReactとTypescriptを始めて触り、除々にフロントエンドメインに注力する</li>
+                <li>2020年<br/>フロントエンド（React、Typescript）を専門にする（バックエンドは業務で必要に応じてキャッチアップ）</li>
+              </ul>
+            </dd>
+            <dt>自作アプリ</dt>
+            <dd>
+              <ul>
+                <li>Android: <a href="https://play.google.com/store/apps/details?id=io.github.suzu_hiro7.shoping_list&hl=ja" target="_blank">
+                    買い物リスト</a> (flutter) <span class="detail">開発中断（検索結果に表示されないためほぼダウンロードされる可能性がない。本格的にコストや手間をかけて、クラウド連携してプッシュ通知の実装、flutterではなくAndroidでウィジェットの実装、広告を出すなどが必要）</span>
+                </li>
+                <li>非公開の個人利用のWebアプリは複数あり（React、PHP（自作FW））
+                </li>
+              </ul>
+            </dd>
+          </dl>
         </section>
       </div>
     </main>

@@ -14,6 +14,13 @@ const MENUS = {
         title: '実績',
         path: 'works',
         note: '実際に現場で実装したコードをそのままではなく、要点を簡潔にまとめて再現します',
+        children: {
+          breadcrumb: {
+            title: 'パンクズリスト',
+            path: 'breadcrumb.html',
+            note: 'フォルダ階層をパンクズリストで表示<br/>オーバーフローする場合は中央の階層を省略表示にして、ポップアップで省略した階層を表示する。'
+          }
+        }
       },
       tools: {
         title: 'Tools',
@@ -24,6 +31,11 @@ const MENUS = {
             title: 'カラーコード変換',
             path: 'color.html',
             note: '10進数 <-> 16進数(RBG)、RBGA -> RGB の変換です。'
+          },
+          recursive: {
+            title: '再帰処理',
+            path: 'recursive.html',
+            note: '再帰構造オブジェクトの値チェックや編集を行う'
           }
         }
       }

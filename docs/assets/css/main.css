@@ -1,6 +1,7 @@
 :root {
   --link-color: #2255ee;
   --link-color-rgb: 34 85 238;
+  --border-color: #ccc;
   --width-pc: 800px;
 }
 

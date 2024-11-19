@@ -199,29 +199,30 @@ class PageList extends HTMLElement {
       pageNote.innerHTML = menu.note
       pageWrapper.appendChild(pageNote)
     }
-
-    const childrenWrapper = document.createElement('div')
-    childrenWrapper.classList.add('children')
-
-    Object.values(menu.children).forEach(item => {
-      const card = document.createElement('div')
-      const cardTitle = document.createElement('h3')
-      const link = document.createElement('a')
-      link.href = item.path
-      cardTitle.textContent = item.title
-      card.appendChild(cardTitle)
-      link.appendChild(card)
-      if (item.note) {
-        const cardNote = document.createElement('p')
-        cardNote.innerHTML = item.note
-        card.appendChild(cardNote)
-      }
-
-      childrenWrapper.appendChild(link)
-    })
-
     this.#_wrapper.appendChild(pageWrapper)
-    this.#_wrapper.appendChild(childrenWrapper)
+
+    if (menu.children) {
+      const childrenWrapper = document.createElement('div')
+      childrenWrapper.classList.add('children')
+
+      Object.values(menu.children).forEach(item => {
+        const card = document.createElement('div')
+        const cardTitle = document.createElement('h3')
+        const link = document.createElement('a')
+        link.href = item.path
+        cardTitle.textContent = item.title
+        card.appendChild(cardTitle)
+        link.appendChild(card)
+        if (item.note) {
+          const cardNote = document.createElement('p')
+          cardNote.innerHTML = item.note
+          card.appendChild(cardNote)
+        }
+  
+        childrenWrapper.appendChild(link)
+      })
+      this.#_wrapper.appendChild(childrenWrapper)
+    }
   }
 }
 
