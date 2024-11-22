@@ -19,6 +19,11 @@ const MENUS = {
             title: 'パンクズリスト',
             path: 'breadcrumb.html',
             note: 'フォルダ階層をパンクズリストで表示<br/>オーバーフローする場合は中央の階層を省略表示にして、ポップアップで省略した階層を表示する。'
+          },
+          typescript: {
+            title: 'Typescript',
+            path: 'typescript.html',
+            note: '実際に現場で実装した型定義です。'
           }
         }
       },
@@ -109,3 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
     pageList?.setAttribute('path', path)
   }
 })
+
+const MyConst = {
+  SHIKI: {
+    libPath: `${myUtils.rootPath}/lib/shiki@1.23.1/index.js`,
+    defaultTheme: 'dark-plus'
+  }
+}

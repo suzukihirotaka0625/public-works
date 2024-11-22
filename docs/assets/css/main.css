@@ -9,9 +9,13 @@
   box-sizing: border-box;
 }
 
-body {
+body, ul {
   padding: 0;
   margin: 0;
+}
+
+ul {
+  padding-left: 1.2rem;
 }
 
 a {
@@ -24,7 +28,7 @@ my-header::part(content) {
 }
 
 main {
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 1rem 2.5rem;
   .content {
     width: var(--width-pc);
     margin: auto;
@@ -37,5 +41,14 @@ main {
   }
   my-header::part(content) {
     width: 100%;
+  }
+}
+
+/** SHIKI */
+.content {
+  .code {
+    pre {
+      padding: 1rem;
+    }
   }
 }

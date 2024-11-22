@@ -227,3 +227,145 @@ class PageList extends HTMLElement {
 }
 
 customElements.define('page-list', PageList)
+
+class CodeBlock extends HTMLElement {
+
+  static content = `
+  <span class="tag"></span>
+  <div class="code"></div>
+  `
+  static style = `
+  .tag {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #444;
+    border-radius: 4px 4px 0 0;
+    padding: 2px .75rem;
+    font-size: .75rem;
+    color: #ddd;
+    height: 18px;
+    svg {
+      cursor: pointer;
+      &.active {
+        visibility: hidden;
+      }
+      &:hover {
+        opacity: .5;
+      }
+    }
+  }
+  .code {
+    pre {
+      padding: 1rem;
+      margin: 0;
+      border-radius: 0 0 4px 4px;
+      white-space: pre-wrap;
+      line-height: 1.2;
+    }
+  }
+  `
+
+  #_wrrapper
+
+  static copyIcon = () => `
+<svg fill="#f1f1f1" width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21,8H9A1,1,0,0,0,8,9V21a1,1,0,0,0,1,1H21a1,1,0,0,0,1-1V9A1,1,0,0,0,21,8ZM20,20H10V10H20ZM6,15a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V3A1,1,0,0,1,3,2H15a1,1,0,0,1,1,1V5a1,1,0,0,1-2,0V4H4V14H5A1,1,0,0,1,6,15Z"/>
+</svg>
+`
+
+  static observedAttributes = ['html'];
+
+  constructor() {
+    super()
+
+    const { wrapper } = myUtils.prepareCustomElement(CodeBlock, this.attachShadow({mode: "closed"}), { tag: 'div' })
+
+    this.#_wrrapper = wrapper
+
+    const name = this.getAttribute('name') ?? ''
+
+    const tag = wrapper.querySelector('.tag')
+
+    tag.innerHTML = CodeBlock.copyIcon()
+    tag.prepend(`${this.getAttribute('type')}${name ? ' / ' : ''}${name}`)
+
+    const icon = tag.querySelector('svg')
+    icon.addEventListener('click', () => {
+      icon.classList.add('active')
+      const text = this.#_wrrapper.querySelector('.code').textContent
+
+      const copied = () => {
+        setTimeout(() => {
+          icon.classList.remove('active')
+        }, 200)
+      }
+
+      navigator.clipboard.writeText(text).then(
+        copied,
+        copied
+      )
+    })
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'html') {
+      this.handleHtml(newValue)
+    }
+  }
+
+  handleHtml(value) {
+    if (!value) return
+    this.#_wrrapper.querySelector('.code').innerHTML = value
+  }
+}
+
+customElements.define('code-block', CodeBlock)
+
+class ExternalLink extends HTMLElement {
+
+  static content = `
+  `
+  static style = `
+    a {
+      color: var(--link-color);
+      text-decoration: none;
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+  `
+  static icon = (color, size) => `<svg 
+  xmlns="http://www.w3.org/2000/svg"
+  width="${size}"
+  height="${size}"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="${color}"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+  <polyline points="15 3 21 3 21 9" />
+  <line x1="10" y1="14" x2="21" y2="3" />
+</svg>`
+
+  constructor() {
+    super()
+
+    const { wrapper } = myUtils.prepareCustomElement(ExternalLink, this.attachShadow({mode: "closed"}), { tag: 'a' })
+
+    wrapper.href = this.getAttribute('link')
+    wrapper.target = '_blank'
+    wrapper.setAttribute('rel', 'noopener noreferrer')
+    wrapper.innerHTML = ExternalLink.icon(
+      myUtils.rootStyle.getPropertyValue('--link-color'),
+      this.getAttribute('size') || 16
+    )
+
+    wrapper.prepend(this.getAttribute('name'))
+  }
+}
+
+customElements.define('external-link', ExternalLink)
