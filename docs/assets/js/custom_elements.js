@@ -20,6 +20,34 @@ class MyMenu extends HTMLElement {
         text-decoration: none;
         color: var(--link-color);
         display: flex;
+        gap: 4px;
+        &:hover {
+          color: rgb(var(--link-color-rgb) / .5);
+          svg path {
+            fill: rgb(var(--link-color-rgb) / .5);
+          }
+        }
+      }
+      .submenu {
+        position: absolute;
+        padding: 4px;
+        top: calc(100% - 4px);
+        left: calc(100% - 20px);
+        font-size: .75rem;
+        background-color: white;
+        border: 1px solid #999;
+        display: none;
+        &.active {
+          display: block;
+        }
+        li {
+          width: max-content;
+          min-width: 80px;
+          padding: 2px 6px 2px 4px;
+          &:after {
+            content: '';
+          }
+        }
       }
     }
     > li:not(:last-child):after {
@@ -29,6 +57,12 @@ class MyMenu extends HTMLElement {
       right: -20px;
       color: #999;
     }
+  }
+  button.icon {
+    border: none;
+    padding: 0;
+    height: 20px;
+    cursor: pointer;
   }
   `
 
@@ -50,6 +84,11 @@ class MyMenu extends HTMLElement {
     }
   }
 
+  /**
+   * パンクズリストを設定する
+   * @param {String} path 'top.works.xxx.html'
+   * @returns 
+   */
   #_setMenu(path) {
     if (!path) return
 
@@ -58,24 +97,76 @@ class MyMenu extends HTMLElement {
     menus.forEach((menu, i) => {
       const li = document.createElement('li')
       let titleWrapper = li
+      let isA = false
+      const linkColor = myUtils.rootStyle.getPropertyValue('--link-color')
       if (i < menus.length - 1) {
         const a = document.createElement('a')
         titleWrapper = a
         a.href = `${myUtils.rootPath}${menu.path}`
         li.appendChild(a)
+        isA = true
       }
       if (i === 0) {
         titleWrapper.innerHTML = SVG.home({
-          color: titleWrapper.tagName.toUpperCase() === 'A'
-            ? myUtils.rootStyle.getPropertyValue('--link-color')
-            : undefined
+          color: isA ? linkColor : undefined
         })
       } else {
         titleWrapper.appendChild(document.createTextNode(menu.title))
       }
 
+      if (isA && Object.keys(menu.children ?? {}).length > 1) {
+        const submenu = this.#_createSubMenu(menu.children, menu.path, i < menus.length ? menus[i + 1].key : '' )
+        const svg = myUtils.strToDom(SVG.triangleDown({ color: linkColor, size: '20px' }))
+        const btn = document.createElement('button')
+        btn.classList.add('icon')
+
+        btn.appendChild(svg)
+        btn.addEventListener('click', (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          // 他のサブメニューが開いていたら閉じる
+          if (!submenu.classList.contains('active')) {
+            this.#_wrapper.querySelectorAll('.submenu').forEach(item => {
+              item.classList.remove('active')
+            })
+          }
+          submenu.classList.toggle('active')
+        })
+
+        submenu.addEventListener('mouseleave', () => {
+          submenu.classList.remove('active')
+        })
+
+        titleWrapper.appendChild(btn)
+        titleWrapper.appendChild(submenu)
+      }
+
       this.#_wrapper.appendChild(li)
     })
+  }
+
+  /**
+   * サブメニューを生成する
+   * @param {*} children 
+   * @param {String} basePath
+   * @param {*} nextKey 
+   * @returns 
+   */
+  #_createSubMenu(children, basePath, nextKey) {
+
+    const ul = document.createElement('ul')
+    ul.classList.add('submenu')
+    Object.values(children).forEach(menu => {
+      // 現在の階層はスキップ
+      if (menu.path.split('.')[0] === nextKey) return
+      const li = document.createElement('li')
+      const a = document.createElement('a')
+      a.href = `${myUtils.rootPath}${basePath}${basePath === '/' ? '' : '/'}${menu.path}`
+      a.textContent = menu.title
+      li.appendChild(a)
+      ul.appendChild(li)
+    })
+    return ul
   }
 }
 

@@ -61,6 +61,14 @@ const MENUS = {
  * ユーティリティー
  */
 const myUtils = (() => {
+
+  const _template = document.createElement('template')
+
+  const strToDom = (str) => {
+      _template.innerHTML = str
+      return _template.content.cloneNode(true)
+  }
+
   const prepareCustomElement = (element, shadowRoot, options) => {
     const wrapper = document.createElement(options.tag ?? 'div')
     if (element.content) {
@@ -86,11 +94,11 @@ const myUtils = (() => {
         throw new Error(`${key} is not exists in menus`)
       }
       const menu = result.menu[key]
-      const path = `${result.path}/${menu.path}`
+      const path = `${result.path}${result.path === '/' ? '' : '/'}${menu.path}`
       return {
         menu: menu.children,
         path,
-        arr: [...result.arr, { title: menu.title, path, children: menu.children ?? null }]
+        arr: [...result.arr, { title: menu.title, path, children: menu.children ?? null, key }]
       }
     }, { menu: MENUS, path: '', arr: []}).arr
   }
@@ -111,6 +119,7 @@ const myUtils = (() => {
     prepareCustomElement,
     parseMenu,
     getCurrentMenu,
+    strToDom,
     rootPath: location.host.indexOf('localhost') === -1 ? '/public-works' : '/lolipop/public-works/docs',
     rootStyle: getComputedStyle(document.querySelector(':root'))
   }
@@ -119,8 +128,9 @@ const myUtils = (() => {
 /** SVG */
 class SVG {
   static triangleDown = ({ color = '#000', size = '20px' }) => `
-<svg fill="${color}" width="${size}" height="${size}" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><path d="M 9.9647 50.2070 L 46.0351 50.2070 C 50.0195 50.2070 52.5040 47.3476 52.5040 43.7383 C 52.5040 42.6601 52.2227 41.5586 51.6367 40.5508 L 33.5663 9.0742 C 32.3476 6.9414 30.2147 5.7930 28.0116 5.7930 C 25.8319 5.7930 23.6757 6.9414 22.4335 9.0742 L 4.3632 40.5742 C 3.7772 41.5820 3.4960 42.6601 3.4960 43.7383 C 3.4960 47.3476 6.0038 50.2070 9.9647 50.2070 Z M 10.0116 46.5273 C 8.3710 46.5273 7.2929 45.1914 7.2929 43.7383 C 7.2929 43.3164 7.3632 42.8242 7.5976 42.3320 L 25.6444 10.8554 C 26.1600 9.9648 27.0976 9.5430 28.0116 9.5430 L 28.0116 46.5273 Z"/></svg>
-  `
+<svg width="${size}" height="${size}" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M4 6H11L7.5 10.5L4 6Z" fill="${color}" />
+</svg>`
 
   static home = ({ color = '#444', size = '20px' }) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M21.4498 10.275L11.9998 3.1875L2.5498 10.275L2.9998 11.625H3.7498V20.25H20.2498V11.625H20.9998L21.4498 10.275ZM5.2498 18.75V10.125L11.9998 5.0625L18.7498 10.125V18.75H14.9999V14.3333L14.2499 13.5833H9.74988L8.99988 14.3333V18.75H5.2498ZM10.4999 18.75H13.4999V15.0833H10.4999V18.75Z" fill="${color}"/>
