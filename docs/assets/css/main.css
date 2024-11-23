@@ -14,6 +14,16 @@ body, ul {
   margin: 0;
 }
 
+h2 {
+  background-color: #f1f1f1;
+  padding: 4px;
+}
+
+h3 {
+  margin-block: .5rem;
+  padding: 4px;
+}
+
 ul {
   padding-left: 1.2rem;
 }
@@ -44,11 +54,20 @@ main {
   }
 }
 
-/** SHIKI */
-.content {
-  .code {
-    pre {
-      padding: 1rem;
-    }
-  }
+/* 説明ブロック */
+.description {
+  margin-block: 1rem;
+  font-size: .8rem;
+  line-height: 1.8;
+}
+
+/* インラインのコード */
+.code {
+  display: inline-block;
+  margin-inline: 4px;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  line-height: 20px;
+  padding: 0 4px;
 }

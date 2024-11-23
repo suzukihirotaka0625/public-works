@@ -5,30 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="robots" content="noindex">
     <title>my skills</title>
-    <link rel="shortcut icon" href="../favicon.ico" /> 
-    <link rel="stylesheet" href="../assets/css/main.css" />
-    <script src="../assets/js/main.js"></script>
-    <script src="../assets/js/custom_elements.js" defer></script>
-    <style>
-      h3 {
-        background-color: #f1f1f1;
-        padding: 4px;
-      }
-      .description {
-        padding-block: 1rem;
-        font-size: .8rem;
-        line-height: 1.8;
-      }
-      .code {
-        display: inline-block;
-        margin-inline: 4px;
-        background-color: #f1f1f1;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        line-height: 20px;
-        padding: 0 4px;
-      }
-    </style>
+    <link rel="shortcut icon" href="../../favicon.ico" /> 
+    <link rel="stylesheet" href="../../assets/css/main.css" />
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/custom_elements.js" defer></script>
   </head>
   <body>
     <my-header>
@@ -37,13 +17,15 @@
     <main>
       <div class="content">
         <section>
-          <h3>Highchartsのレーダーチャートの設定</h3>
+          <h2>Highchartsの設定</h2>
+          <h3>背景</h3>
           <div class="description">
             <external-link name="Highcharts" link="https://www.highcharts.com/" size="14"></external-link>
 で、レーダーチャートを描画する機能がありました。<br/>
 レーダーチャートの頂点の数により、チャート本体の大きさや項目ラベルの位置などが異なり、その結果項目ラベルや凡例の見切れが発生するため、頂点の数によりチャートの項目ラベルの位置やテキストの大きさなどを調整する必要がありました。<br/>
 以下、チャートの設定項目です。
           </div>
+          <h3>実装</h3>
           <code-block id="section-1-1" type="typescript"></code-block>
           <div class="description">
             基本設定と調整が必要なタイプのユニオンを以下のように定義します。
