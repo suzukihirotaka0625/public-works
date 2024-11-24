@@ -5,7 +5,7 @@ class MyMenu extends HTMLElement {
 
   static content = ``
   static style = `
-  ul { 
+  ul {
     list-style: none;
     margin: 0;
     padding: 0 10px 0 0;
@@ -16,11 +16,12 @@ class MyMenu extends HTMLElement {
     li {
       position: relative;
       display: flex;
+      gap: 6px;
       a {
         text-decoration: none;
         color: var(--link-color);
         display: flex;
-        gap: 4px;
+        gap: 6px;
         &:hover {
           color: rgb(var(--link-color-rgb) / .5);
           svg path {
@@ -30,15 +31,20 @@ class MyMenu extends HTMLElement {
       }
       .submenu {
         position: absolute;
-        padding: 4px;
+        z-index: 1;
+        box-sizing: border-box;
+        padding: 6px;
         top: calc(100% - 4px);
         left: calc(100% - 20px);
-        font-size: .75rem;
+        font-size: .9rem;
         background-color: white;
         border: 1px solid #999;
         display: none;
         &.active {
           display: block;
+        }
+        .submenu-header {
+          display: none;
         }
         li {
           width: max-content;
@@ -63,6 +69,37 @@ class MyMenu extends HTMLElement {
     padding: 0;
     height: 20px;
     cursor: pointer;
+  }
+  @media screen and (max-width: 640px) {
+    ul {
+      li .submenu {
+        left: var(--submenu-left);
+        width: calc(100vw - 20px);
+        box-shadow: 4px 4px 4px rgb(0 0 0 / .2);
+        li {
+          font-size: 1rem;
+          padding-block: .3rem;
+        }
+        .submenu-header {
+          display: block;
+          align-items: center;
+          position: relative;
+          width: unset;
+          height: 10px;
+          padding: 0;
+          > button {
+            position: absolute;
+            right: 4px;
+            padding: 0;
+            border: none;
+            background: none;
+            svg path {
+              fill: #444;
+            }
+          }
+        }
+      }
+    }
   }
   `
 
@@ -93,7 +130,6 @@ class MyMenu extends HTMLElement {
     if (!path) return
 
     const menus = myUtils.parseMenu(path)
-
     menus.forEach((menu, i) => {
       const li = document.createElement('li')
       let titleWrapper = li
@@ -114,8 +150,8 @@ class MyMenu extends HTMLElement {
         titleWrapper.appendChild(document.createTextNode(menu.title))
       }
 
-      if (isA && Object.keys(menu.children ?? {}).length > 1) {
-        const submenu = this.#_createSubMenu(menu.children, menu.path, i < menus.length ? menus[i + 1].key : '' )
+      if (menu.siblings.length > 1) {
+        const submenu = this.#_createSubMenu(menu.siblings)
         const svg = myUtils.strToDom(SVG.triangleDown({ color: linkColor, size: '20px' }))
         const btn = document.createElement('button')
         btn.classList.add('icon')
@@ -129,6 +165,10 @@ class MyMenu extends HTMLElement {
             this.#_wrapper.querySelectorAll('.submenu').forEach(item => {
               item.classList.remove('active')
             })
+
+            // SP用に位置を取得
+            const parentRect = submenu.parentElement.getBoundingClientRect()
+            submenu.style.setProperty('--submenu-left', `${-parentRect.left + 10}px`)
           }
           submenu.classList.toggle('active')
         })
@@ -147,21 +187,32 @@ class MyMenu extends HTMLElement {
 
   /**
    * サブメニューを生成する
-   * @param {*} children 
-   * @param {String} basePath
-   * @param {*} nextKey 
+   * @param {*} submenus 
    * @returns 
    */
-  #_createSubMenu(children, basePath, nextKey) {
-
+  #_createSubMenu(submenus) {
     const ul = document.createElement('ul')
     ul.classList.add('submenu')
-    Object.values(children).forEach(menu => {
-      // 現在の階層はスキップ
-      if (menu.path.split('.')[0] === nextKey) return
+
+    // 閉じるボタン（SP用）
+    const header = document.createElement('li')
+    header.classList.add('submenu-header')
+    const close = myUtils.strToDom(SVG.close({ size: '26px'}))
+    const closeBtn = document.createElement('button')
+    closeBtn.append(close)
+    closeBtn.addEventListener('click', e => {
+      console.log('click close', header.parentElement)
+      e.stopPropagation()
+      e.preventDefault()
+      header.parentElement.classList.remove('active')
+    })
+    header.appendChild(closeBtn)
+    ul.appendChild(header)
+
+    submenus.forEach(menu => {
       const li = document.createElement('li')
       const a = document.createElement('a')
-      a.href = `${myUtils.rootPath}${basePath}${basePath === '/' ? '' : '/'}${menu.path}`
+      a.href = `${myUtils.rootPath}${menu.path}`
       a.textContent = menu.title
       li.appendChild(a)
       ul.appendChild(li)

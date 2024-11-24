@@ -95,10 +95,16 @@ const myUtils = (() => {
       }
       const menu = result.menu[key]
       const path = `${result.path}${result.path === '/' ? '' : '/'}${menu.path}`
+      const siblings = Object.entries(result.menu).filter(([_key, _menu]) => _key !== key).map(([_, _menu]) => {
+        return ({
+          ..._menu,
+          path: `${result.path}${result.path === '/' ? '' : '/'}${_menu.path}`
+        })
+      })
       return {
         menu: menu.children,
         path,
-        arr: [...result.arr, { title: menu.title, path, children: menu.children ?? null, key }]
+        arr: [...result.arr, { title: menu.title, path, children: menu.children ?? null, key, siblings }]
       }
     }, { menu: MENUS, path: '', arr: []}).arr
   }
@@ -115,13 +121,16 @@ const myUtils = (() => {
     return menu
   }
 
+  const rootStyle = getComputedStyle(document.querySelector(':root'))
+
   return {
     prepareCustomElement,
     parseMenu,
     getCurrentMenu,
     strToDom,
     rootPath: location.host.indexOf('localhost') === -1 ? '/public-works' : '/lolipop/public-works/docs',
-    rootStyle: getComputedStyle(document.querySelector(':root'))
+    rootStyle,
+    isSp: () => rootStyle.getPropertyValue('--is-sp') === '1'
   }
 })()
 
@@ -154,6 +163,10 @@ class SVG {
   <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
   <polyline points="15 3 21 3 21 9" />
   <line x1="10" y1="14" x2="21" y2="3" />
+</svg>`
+
+  static close = ({ color = '#444', size = '14px' }) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M10.9393 12L6.9696 15.9697L8.03026 17.0304L12 13.0607L15.9697 17.0304L17.0304 15.9697L13.0607 12L17.0303 8.03039L15.9696 6.96973L12 10.9393L8.03038 6.96973L6.96972 8.03039L10.9393 12Z" fill="${color}"/>
 </svg>`
 }
 
