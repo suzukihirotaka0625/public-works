@@ -136,20 +136,20 @@ const myUtils = (() => {
 
 /** SVG */
 class SVG {
-  static triangleDown = ({ color = '#000', size = '20px' }) => `
+  static triangleDown = ({ color = '#000', size = '20px' } = {}) => `
 <svg width="${size}" height="${size}" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M4 6H11L7.5 10.5L4 6Z" fill="${color}" />
 </svg>`
 
-  static home = ({ color = '#444', size = '20px' }) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  static home = ({ color = '#444', size = '20px' } = {}) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M21.4498 10.275L11.9998 3.1875L2.5498 10.275L2.9998 11.625H3.7498V20.25H20.2498V11.625H20.9998L21.4498 10.275ZM5.2498 18.75V10.125L11.9998 5.0625L18.7498 10.125V18.75H14.9999V14.3333L14.2499 13.5833H9.74988L8.99988 14.3333V18.75H5.2498ZM10.4999 18.75H13.4999V15.0833H10.4999V18.75Z" fill="${color}"/>
 </svg>`
 
-  static copy = ({ color = '#f1f1f1', size = '14px' }) => `<svg fill="${color}" width="${size}" height="${size}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  static copy = ({ color = '#f1f1f1', size = '14px' } = {}) => `<svg fill="${color}" width="${size}" height="${size}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M21,8H9A1,1,0,0,0,8,9V21a1,1,0,0,0,1,1H21a1,1,0,0,0,1-1V9A1,1,0,0,0,21,8ZM20,20H10V10H20ZM6,15a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V3A1,1,0,0,1,3,2H15a1,1,0,0,1,1,1V5a1,1,0,0,1-2,0V4H4V14H5A1,1,0,0,1,6,15Z"/>
 </svg>`
 
-  static externalLink = ({ color = '#444', size = '14px' }) => `<svg 
+  static externalLink = ({ color = '#444', size = '14px' } = {}) => `<svg 
   xmlns="http://www.w3.org/2000/svg"
   width="${size}"
   height="${size}"
@@ -165,7 +165,7 @@ class SVG {
   <line x1="10" y1="14" x2="21" y2="3" />
 </svg>`
 
-  static close = ({ color = '#444', size = '14px' }) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  static close = ({ color = '#444', size = '14px' } = {}) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M10.9393 12L6.9696 15.9697L8.03026 17.0304L12 13.0607L15.9697 17.0304L17.0304 15.9697L13.0607 12L17.0303 8.03039L15.9696 6.96973L12 10.9393L8.03038 6.96973L6.96972 8.03039L10.9393 12Z" fill="${color}"/>
 </svg>`
 }
