@@ -16,18 +16,19 @@ class MyMenu extends HTMLElement {
     li {
       position: relative;
       display: flex;
-      gap: 6px;
       a {
         text-decoration: none;
         color: var(--link-color);
         display: flex;
-        gap: 6px;
         &:hover {
           color: rgb(var(--link-color-rgb) / .5);
           svg path {
             fill: rgb(var(--link-color-rgb) / .5);
           }
         }
+      }
+      svg {
+        margin-left: 6px;
       }
       .submenu {
         position: absolute;
@@ -40,6 +41,7 @@ class MyMenu extends HTMLElement {
         background-color: white;
         border: 1px solid #999;
         display: none;
+        box-shadow: 4px 4px 4px rgb(0 0 0 / .2);
         &.active {
           display: block;
         }
@@ -48,7 +50,7 @@ class MyMenu extends HTMLElement {
         }
         li {
           width: max-content;
-          min-width: 80px;
+          min-width: 100px;
           padding: 2px 6px 2px 4px;
           &:after {
             content: '';
@@ -75,7 +77,6 @@ class MyMenu extends HTMLElement {
       li .submenu {
         left: var(--submenu-left);
         width: calc(100vw - 20px);
-        box-shadow: 4px 4px 4px rgb(0 0 0 / .2);
         li {
           font-size: 1rem;
           padding-block: .3rem;
@@ -271,11 +272,12 @@ class PageList extends HTMLElement {
         gap: 1rem;
     }
   }
-  h2, h3 {
-    margin: 0;
-  }
   h2 {
-    font-size: 1.2rem;
+    margin-block: .5rem;
+    font-size: 1.3rem;
+  }
+  h3 {
+    margin: 0;
   }
   .children {
     display: grid;

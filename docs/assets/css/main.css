@@ -8,6 +8,7 @@
 
 * {
   box-sizing: border-box;
+  color: #333;
 }
 
 body, ul {
@@ -18,11 +19,14 @@ body, ul {
 h2 {
   background-color: #f1f1f1;
   padding: 4px;
+  font-size: 1.3rem;
+  margin-block: .5rem;
 }
 
 h3 {
   margin-block: .5rem;
   padding: 4px;
+  font-size: 1.15rem;
 }
 
 ul {
@@ -43,6 +47,35 @@ main {
   .content {
     width: var(--width-pc);
     margin: auto;
+  }
+}
+
+input {
+  padding: 6px 8px;
+  border: 1px solid #888;
+  border-radius: 3px;
+  &:focus {
+    outline: none;
+    border: 1px solid var(--link-color);
+    box-shadow: 0 0 5px 1px var(--link-color);
+  }
+  &::placeholder {
+    color: #999;
+  }
+}
+
+button {
+  background-color: var(--link-color);
+  border: 1px solid var(--link-color);
+  border-radius: 3px;
+  color: white;
+  padding: 4px 1rem;
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 5px 1px var(--link-color);
+  }
+  &:hover {
+    background-color: rgb(var(--link-color-rgb) / .8);
   }
 }
 

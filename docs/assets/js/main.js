@@ -44,7 +44,7 @@ const MENUS = {
           color: {
             title: 'カラーコード変換',
             path: 'color.html',
-            note: '10進数 <-> 16進数(RBG)、RBGA -> RGB の変換です。'
+            note: 'いろいろなカラーコードの変換を行います。'
           },
           recursive: {
             title: '再帰処理',
