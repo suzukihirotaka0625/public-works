@@ -20,6 +20,9 @@
           flex-grow: 1;
         }
       }
+      div:has( > label) {
+        display: flex;
+      }
       .color {
         width: 30px;
         height: 30px;
@@ -43,6 +46,19 @@
           <page-list></page-list>
         </section>
         <section>
+          <h3>フォーマット</h3>
+          <div>
+            <label>
+              <input type="radio" name="format" value="default" checked />
+              <span class="code">rgb(255 218 27 / 0.2)</span>
+            </label>
+            <label>
+              <input type="radio" name="format" value="legacy" />
+              <span class="code">rgba(255, 218, 27, 0.2)</span>
+            </label>
+          </div>
+        </section>
+        <section>
           <h3>16進数 -> 10進数</h3>
           <div>
             <input id="c1_in" placeholder="#FF9966"/> <button id="c1_btn">変換</button> <input id="c1_out" /> <div class="color" />
@@ -64,46 +80,118 @@
     </main>
     <script>
       window.addEventListener('DOMContentLoaded', (event) => {
+        let format = 'default'
+
+        const forms = [1, 2, 3].reduce((ret, no) => {
+          ret[`c${no}`] = {
+            in: document.getElementById(`c${no}_in`),
+            out: document.getElementById(`c${no}_out`),
+            btn: document.getElementById(`c${no}_btn`)
+          }
+          return ret
+        }, {})
+
+        const settings = {
+          default: {
+            delimiter: ' ',
+            delimiterOut: ' ',
+            c1: {},
+            c2: {
+              placeholder: '255 218 27',
+              getInputValue: () => forms.c2.in.value.replace(/\s+/g, ' '),
+              validate: (inputValue) => /^\d{1,3}( \d{1,3})*$/.test(inputValue)
+            },
+            c3: {
+              placeholder: '255 218 27 / 0.2',
+              getInputValue: () => forms.c3.in.value.replace(/\s+/g, ' '),
+              validate: (inputValue) => /^\d{1,3}( \d{1,3}){2} ?\/ ?0?\.\d+$/.test(inputValue),
+              parseColors: (inputValue) => inputValue.replace(/ ?\/ ?/, ' ').split(' ')
+            }
+          },
+          legacy: {
+            delimiter: ',',
+            delimiterOut: ', ',
+            c1: {},
+            c2: {
+              placeholder: '255, 218, 27',
+              getInputValue: () => forms.c2.in.value.replace(/\s/g, ''),
+              validate: (inputValue) => /^\d{1,3}(,\d{1,3})*$/.test(inputValue)
+            },
+            c3: {
+              placeholder: '255, 218, 27, 0.2',
+              getInputValue: () => forms.c3.in.value.replace(/\s/g, ''),
+              validate: (inputValue) => /^(\d{1,3},){1,3}(0?.\d{1,3})*$/.test(inputValue),
+              parseColors: (inputValue) => inputValue.split(',')
+            }
+          }
+        }
+
+        const getSetting = (type) => {
+          return {
+            delimiter: settings[format].delimiter,
+            delimiterOut: settings[format].delimiterOut,
+            ...settings[format][type]
+          }
+        }
+
+        // フォーマット選択
+        document.getElementsByName('format').forEach(item => {
+          item.addEventListener('change', e => {
+            format = e.target.value
+            forms.c2.in.placeholder = settings[format].c2.placeholder
+            forms.c3.in.placeholder = settings[format].c3.placeholder
+          })
+        })
 
         // 16進数 -> 10進数
-        const c1Out = document.getElementById('c1_out')
-        document.getElementById('c1_btn').addEventListener('click', () => {
-          let inputValue = document.getElementById('c1_in').value.replace('#', '')
+        forms.c1.btn.addEventListener('click', () => {
+          const setting = getSetting('c1')
+          // 入力値
+          let inputValue = forms.c1.in.value.replace('#', '')
+          // validate
           if (!/^[\da-fA-F]+$/.test(inputValue)) return
           if (![3, 6].includes(inputValue.length)) return
           inputValue = inputValue.length === 3 ? inputValue.replace(/(.)(.)(.)/, '$1$1$2$2$3$3') : inputValue
 
-          const outputValue = inputValue.match(/.{2}/g).map(v => parseInt(v, 16)).join(' ')
-          c1Out.value = outputValue
-          c1Out.nextElementSibling.style.background = `#${inputValue}`
+          const outputValue = inputValue.match(/.{2}/g).map(v => parseInt(v, 16)).join(setting.delimiterOut)
+          forms.c1.out.value = outputValue
+          forms.c1.out.nextElementSibling.style.background = `#${inputValue}`
         })
 
         // 10進数 -> 16進数
-        const c2Out = document.getElementById('c2_out')
-        document.getElementById('c2_btn').addEventListener('click', () => {
-          let inputValue = document.getElementById('c2_in').value.replace(/\s+/g, ' ')
-          if (!/^\d{1,3}( \d{1,3})*$/.test(inputValue)) return
-          const colors = inputValue.split(' ').map(v => Number(v))
+        forms.c2.btn.addEventListener('click', () => {
+          const setting = getSetting('c2')
+          // 入力値
+          let inputValue = setting.getInputValue()
+          if (!setting.validate(inputValue)) return
+          // rgbの配列
+          const colors = inputValue.split(setting.delimiter).map(v => Number(v))
+          // rgbのバリデーション
           if (colors.length !== 3 || colors.some(c => c < 0 || c > 255)) return
+
           const outputValue = colors.map(v => v.toString(16)).join('')
-          c2Out.value = `#${outputValue}`
-          c2Out.nextElementSibling.style.background = c2Out.value
+          forms.c2.out.value = `#${outputValue}`
+          forms.c2.out.nextElementSibling.style.background = forms.c2.out.value
         })
 
         // 10進数 + 透明度 -> 10進数
-        const c3Out = document.getElementById('c3_out')
-        document.getElementById('c3_btn').addEventListener('click', () => {
-          let inputValue = document.getElementById('c3_in').value.replace(/\s+/g, ' ')
-          if (!/^\d{1,3}( \d{1,3}){2} ?\/ ?0?\.\d+$/.test(inputValue)) return
-          const colors = inputValue.replace(/ ?\/ ?/, ' ').split(' ').map(v => Number(v.startsWith('.') ? `0${v}` : v))
+        forms.c3.btn.addEventListener('click', () => {
+          const setting = getSetting('c3')
+          // 入力値
+          let inputValue = setting.getInputValue()
+          if (!setting.validate(inputValue)) return
+          // rgb + aの配列
+          const colors = setting.parseColors(inputValue).map(v => Number(v.startsWith('.') ? `0${v}` : v))
           if (colors.length > 4) return
           const opacity = colors.pop()
+          // rgbのバリデーション
           if ( colors.some(c => c < 0 || c > 255)) return
+          // 透明度のバリデーション
           if (opacity < 0 || opacity >= 1) return
 
-          const outputValue = colors.map(c => Math.round(c + (255 - c) * (1 - opacity))).join(' ')
-          c3Out.value = outputValue
-          c3Out.nextElementSibling.style.background = `rgb(${outputValue})`
+          const outputValue = colors.map(c => Math.round(c + (255 - c) * (1 - opacity))).join(setting.delimiterOut)
+          forms.c3.out.value = outputValue
+          forms.c3.out.nextElementSibling.style.background = `rgb(${outputValue})`
         })
       })
     </script>
