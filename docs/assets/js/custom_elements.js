@@ -82,13 +82,12 @@ class MyMenu extends HTMLElement {
         width: calc(100vw - 20px);
         li {
           font-size: 1rem;
-          padding-block: .3rem;
+          width: unset;
+          padding-block: .5rem;
         }
         .submenu-header {
           display: block;
-          align-items: center;
           position: relative;
-          width: unset;
           height: 10px;
           padding: 0;
           > button {
@@ -97,6 +96,7 @@ class MyMenu extends HTMLElement {
             padding: 0;
             border: none;
             background: none;
+            z-index: 1;
             svg path {
               fill: #444;
             }
