@@ -115,6 +115,13 @@ class MyMenu extends HTMLElement {
     super()
 
     this.#_root = myUtils.prepareCustomElement(MyMenu, this.attachShadow({mode: "closed"}), { tag: 'ul' })
+
+    document.addEventListener('click', e => {
+      console.log(e.target.tagName)
+      if (e.target.tagName !== 'MY-MENU') {
+        this.closeSubmenu()
+      }
+    })
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -221,6 +228,12 @@ class MyMenu extends HTMLElement {
       ul.appendChild(li)
     })
     return ul
+  }
+
+  closeSubmenu() {
+    this.#_root.querySelectorAll('.submenu').forEach(item => {
+      item.classList.remove('active')
+    })
   }
 }
 
