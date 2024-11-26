@@ -70,21 +70,24 @@ const myUtils = (() => {
   }
 
   const prepareCustomElement = (element, shadowRoot, options) => {
-    const wrapper = document.createElement(options.tag ?? 'div')
-    if (element.content) {
-      wrapper.innerHTML = element.content
-    }
-
-    shadowRoot.appendChild(wrapper)
-
-    
     if (element.style) {
       const style = document.createElement('style')
       style.textContent = element.style
       shadowRoot.appendChild(style)
     }
 
-    return { wrapper, shadowRoot }
+    let wrapper = shadowRoot
+    
+    if (options) {
+      wrapper = document.createElement(options.tag ?? 'div')
+      shadowRoot.appendChild(wrapper)
+    }
+
+    if (element.content) {
+      wrapper.appendChild(strToDom(element.content))
+    }
+
+    return wrapper
   }
 
   const parseMenu = (key) => {

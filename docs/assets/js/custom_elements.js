@@ -55,6 +55,9 @@ class MyMenu extends HTMLElement {
           &:after {
             content: '';
           }
+          a {
+            flex-grow: 1;
+          }
         }
       }
     }
@@ -106,14 +109,12 @@ class MyMenu extends HTMLElement {
 
   static observedAttributes = ['path'];
 
-  #_wrapper
+  #_root
 
   constructor() {
     super()
 
-    const { wrapper } = myUtils.prepareCustomElement(MyMenu, this.attachShadow({mode: "closed"}), { tag: 'ul' })
-
-    this.#_wrapper = wrapper
+    this.#_root = myUtils.prepareCustomElement(MyMenu, this.attachShadow({mode: "closed"}), { tag: 'ul' })
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -131,6 +132,7 @@ class MyMenu extends HTMLElement {
     if (!path) return
 
     const menus = myUtils.parseMenu(path)
+
     menus.forEach((menu, i) => {
       const li = document.createElement('li')
       let titleWrapper = li
@@ -151,7 +153,7 @@ class MyMenu extends HTMLElement {
         titleWrapper.appendChild(document.createTextNode(menu.title))
       }
 
-      if (menu.siblings.length > 1) {
+      if (menu.siblings.length) {
         const submenu = this.#_createSubMenu(menu.siblings)
         const svg = myUtils.strToDom(SVG.triangleDown({ color: linkColor, size: '20px' }))
         const btn = document.createElement('button')
@@ -163,7 +165,7 @@ class MyMenu extends HTMLElement {
           e.stopPropagation()
           // 他のサブメニューが開いていたら閉じる
           if (!submenu.classList.contains('active')) {
-            this.#_wrapper.querySelectorAll('.submenu').forEach(item => {
+            this.#_root.querySelectorAll('.submenu').forEach(item => {
               item.classList.remove('active')
             })
 
@@ -182,7 +184,7 @@ class MyMenu extends HTMLElement {
         titleWrapper.appendChild(submenu)
       }
 
-      this.#_wrapper.appendChild(li)
+      this.#_root.appendChild(li)
     })
   }
 
@@ -266,11 +268,9 @@ class PageList extends HTMLElement {
   static content = ``
   static style = `
   :host {
-    > div {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
   h2 {
     margin-block: .5rem;
@@ -315,15 +315,14 @@ class PageList extends HTMLElement {
 
   static observedAttributes = ['path'];
 
-  #_wrapper
+  #_root
 
   constructor() {
     super()
 
-    const { wrapper } = myUtils.prepareCustomElement(PageList, this.attachShadow({mode: "closed"}), { tag: 'div' })
-
-    this.#_wrapper = wrapper
+    this.#_root = myUtils.prepareCustomElement(PageList, this.attachShadow({mode: "closed"}))
   }
+
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'path') {
@@ -346,7 +345,7 @@ class PageList extends HTMLElement {
       pageNote.innerHTML = menu.note
       pageWrapper.appendChild(pageNote)
     }
-    this.#_wrapper.appendChild(pageWrapper)
+    this.#_root.appendChild(pageWrapper)
 
     if (menu.children) {
       const childrenWrapper = document.createElement('div')
@@ -368,7 +367,7 @@ class PageList extends HTMLElement {
   
         childrenWrapper.appendChild(link)
       })
-      this.#_wrapper.appendChild(childrenWrapper)
+      this.#_root.appendChild(childrenWrapper)
     }
   }
 }
@@ -416,20 +415,18 @@ class CodeBlock extends HTMLElement {
   }
   `
 
-  #_wrrapper
-
   static observedAttributes = ['html'];
+
+  #_root
 
   constructor() {
     super()
 
-    const { wrapper } = myUtils.prepareCustomElement(CodeBlock, this.attachShadow({mode: "closed"}), { tag: 'div' })
-
-    this.#_wrrapper = wrapper
+    this.#_root = myUtils.prepareCustomElement(CodeBlock, this.attachShadow({mode: "closed"}))
 
     const name = this.getAttribute('name') ?? ''
 
-    const tag = wrapper.querySelector('.tag')
+    const tag = this.#_root.querySelector('.tag')
 
     tag.innerHTML = SVG.copy()
     tag.prepend(`${this.getAttribute('type')}${name ? ' / ' : ''}${name}`)
@@ -438,7 +435,7 @@ class CodeBlock extends HTMLElement {
     const icon = tag.querySelector('svg')
     icon.addEventListener('click', () => {
       icon.classList.add('active')
-      const text = this.#_wrrapper.querySelector('.code').textContent
+      const text = this.#_root.querySelector('.code').textContent
 
       const copied = () => {
         setTimeout(() => {
@@ -461,7 +458,7 @@ class CodeBlock extends HTMLElement {
 
   handleHtml(value) {
     if (!value) return
-    this.#_wrrapper.querySelector('.code').innerHTML = value
+    this.#_root.querySelector('.code').innerHTML = value
   }
 }
 
@@ -488,17 +485,17 @@ class ExternalLink extends HTMLElement {
   constructor() {
     super()
 
-    const { wrapper } = myUtils.prepareCustomElement(ExternalLink, this.attachShadow({mode: "closed"}), { tag: 'a' })
+    const root = myUtils.prepareCustomElement(ExternalLink, this.attachShadow({mode: "closed"}), { tag: 'a' })
 
-    wrapper.href = this.getAttribute('link')
-    wrapper.target = '_blank'
-    wrapper.setAttribute('rel', 'noopener noreferrer')
-    wrapper.innerHTML = SVG.externalLink({
+    root.href = this.getAttribute('link')
+    root.target = '_blank'
+    root.setAttribute('rel', 'noopener noreferrer')
+    root.innerHTML = SVG.externalLink({
       color: myUtils.rootStyle.getPropertyValue('--link-color'),
       size: this.getAttribute('size') || 16
     })
 
-    wrapper.prepend(this.getAttribute('name'))
+    root.prepend(this.getAttribute('name'))
   }
 }
 
