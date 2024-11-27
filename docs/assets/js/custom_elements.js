@@ -36,7 +36,8 @@ class MyMenu extends HTMLElement {
         box-sizing: border-box;
         padding: 6px;
         top: calc(100% - 4px);
-        left: calc(100% - 20px);
+        left: 0;
+        min-width: 100%;
         font-size: .9rem;
         background-color: white;
         border: 1px solid #999;
@@ -115,9 +116,7 @@ class MyMenu extends HTMLElement {
     super()
 
     this.#_root = myUtils.prepareCustomElement(MyMenu, this.attachShadow({mode: "closed"}), { tag: 'ul' })
-
     document.addEventListener('click', e => {
-      console.log(e.target.tagName)
       if (e.target.tagName !== 'MY-MENU') {
         this.closeSubmenu()
       }

@@ -47,7 +47,7 @@
         </section>
         <section>
           <h3>フォーマット</h3>
-          <radio-group>
+          <radio-group id="radio-format">
             <template>
 {
   "name": "format",
@@ -80,7 +80,18 @@
       </div>
     </main>
     <script>
+      const formatSettings = {
+        name: 'format',
+        items: [
+          { value: 'default', label: 'rgb(255 218 27 / 0.2)', part: 'code', checked: true },
+          { value: 'legacy', label: 'rgba(255, 218, 27, 0.2)', part: 'code' }
+        ]
+      }
+
       window.addEventListener('DOMContentLoaded', (event) => {
+        const radioFormat = document.getElementById('radio-format')
+        radioFormat.render(formatSettings)
+
         let format = 'default'
 
         const [c1, c2, c3] = [1, 2, 3].map(no => ({

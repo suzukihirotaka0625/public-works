@@ -4,23 +4,6 @@
  */
 class RadioGroup extends HTMLElement {
 
-  /**
-   * 1. templateに設定JSONを指定する
-<template>
-{
-  "name": "format",
-  "items": [
-    { "value": "default", "label": "rgb(255 218 27 / 0.2)", "part": "code", "checked": true },
-    { "value": "legacy", "label": "rgba(255, 218, 27, 0.2)", "part": "code" }
-  ]
-}
-</template>
-   * 2. イベントをリッスンする
-   *  document.querySelector('radio-group').addEventListener('changed', e => {
-   *    e.detail.value
-   *  })
-   */
-
   static content = `
   `
 
@@ -41,14 +24,31 @@ class RadioGroup extends HTMLElement {
     }
   `
 
+  #_root
+
   constructor() {
     super()
 
-    const root = myUtils.prepareCustomElement(RadioGroup, this.attachShadow({mode: "closed"}))
+    this.#_root = myUtils.prepareCustomElement(RadioGroup, this.attachShadow({mode: "closed"}))
+  }
 
-    // 設定を取得する
-    const { name, items } = JSON.parse(this.querySelector('template').content.textContent)
+  /**
+   * チェンジイベント
+   * @param {InputE} e 
+   */
+  #_fireChangeEvent(e) {
+    const event = new CustomEvent('changed', {
+      composed: true, // false だと Shadow DOM 境界を超えた外部にイベントはバブリングしない
+      detail: { value: e.target.value }
+    })
+    this.dispatchEvent(event)
+  }
 
+  /**
+   * 
+   * @params { name: 'xxx', items: [ { value: 'xxx', label: 'xxx', part: 'xxx', checked: true } ] }
+   */
+  render({ name, items }) {
     items.forEach(item => {
       const label = document.createElement('label')
       const radio = document.createElement('input')
@@ -69,20 +69,8 @@ class RadioGroup extends HTMLElement {
       }
       span.textContent = item.label
       label.append(span)
-      root.append(label)
+      this.#_root.append(label)
     })
-  }
-
-  /**
-   * チェンジイベント
-   * @param {InputE} e 
-   */
-  #_fireChangeEvent(e) {
-    const event = new CustomEvent('changed', {
-      composed: true, // false だと Shadow DOM 境界を超えた外部にイベントはバブリングしない
-      detail: { value: e.target.value }
-    })
-    this.dispatchEvent(event)
   }
 }
 
