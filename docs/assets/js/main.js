@@ -49,7 +49,7 @@ const MENUS = {
           recursive: {
             title: '再帰処理',
             path: 'recursive.html',
-            note: '再帰構造オブジェクトの値チェックや編集を行う'
+            note: '再帰構造を持つJSONの値チェックや編集を行います。'
           }
         }
       }

@@ -9,6 +9,64 @@
     <link rel="stylesheet" href="../assets/css/main.css" />
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/custom_elements.js" defer></script>
+    <style>
+      .content > section:not(:first-of-type) + section {
+        margin-top: 2rem;
+      }
+      textarea {
+        width: 100%;
+        margin: 10px 0;
+        font-family: monospace;
+      }
+      #data {
+        height: 200px;
+      }
+      #check {
+        height: 100px;
+      }
+      #out {
+        height: 150px;
+      }
+      #result {
+        height: 200px;
+      }
+
+      h3 {
+        border-bottom: 1px solid #bbb;
+      }
+
+      .wrapper {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        > div {
+          flex-basis: 50%;
+        }
+        textarea {
+          width: 100%;
+          height: 60px;
+        }
+      }
+      .note {
+        color: #666;
+        font-size: .8rem;
+      }
+
+      details:has(#settings) {
+        width: 100%;
+        margin-block: 20px 10px;
+        #settings {
+          width: 100%;
+          height: 150px;
+        }
+      }
+      @media screen and (max-width: 640px) {
+        .wrapper {
+          flex-direction: column;
+        }
+      }
+    </style>
   </head>
   <body>
     <my-header>
@@ -17,9 +75,147 @@
     <main>
       <div class="content">
         <section>
-          再帰
+          <page-list></page-list>
+        </section>
+        <section>
+          <h3>JSON</h3>
+          <div class="description">再帰構造を持つ、JSONを入力してください。</div>
+          <textarea id="data" placeholder="JSONデータ"></textarea>
+        </section>
+        <section>
+          <h3>関数定義</h3>
+          <div class="description">
+            各種関数を定義してください。<br/>
+            <span class="note">※ 各関数、第1引数は <span class="code">data</span> はデータ、第2引数 <span class="code">floor</span> は階層になります。</span>
+            <br/>
+            <span class="note" style="margin-left: 1rem;">データ処理のみ、第3引数 <span class="code">settings</span> "設定" が渡されます。</span>
+          </div>
+          <div class="wrapper">
+            <div>
+              <h4>下の階層があるか判定</h4>
+              <textarea id="check_child"></textarea>
+            </div>
+            <div>
+              <h4>下の階層のデータを取得</h4>
+              <textarea id="extract_child"></textarea>
+            </div>
+          </div>
+          <h4>データ処理</h4>
+          <div class="description">データに対する処理を行う。
+            <ul>
+              <li><span class="code">true</span>又は"文字列"を <span class="code">return</span>すると件数がカウントされます。<span class="code">return</span>された文字列と件数カウントはログ出力されます。</li>
+              <li><span class="code">settings</span>などを利用して、データの編集を行います。</li>
+            </ul>
+          </div>
+          <textarea id="check">
+          </textarea>
+          <br/>
+          <br/>
+          <details>
+            <summary>設定</summary>
+            <textarea id="settings">
+            </textarea>
+          </details>
+        </section>
+        <section>
+          <button id="btn">実行</button>
+        </section>
+        <section>
+          <h3>実行結果</h3>
+          <h4>ログ</h4>
+          <textarea id="out"></textarea>
+          <br/>
+          <h4>処理後のデータ</h4>
+          <textarea id="result"></textarea>
         </section>
       </div>
     </main>
+    <script>
+      const texts = {
+        data: `{
+  "children": [
+    { "id": 1, "age": 10 },
+    { "id": 2, "age": 35 },
+    { "id": 3, "age": null },
+    { 
+      "children": [
+        { "id": 4, "age": 18 },
+        { "id": 5, "age": null }
+      ]
+    }
+  ]
+}`,
+        checkChild: `return 'children' in data`,
+        extractChild: `return data.children`,
+        check: `if (data.id in settings) data.name = settings[data.id]
+
+if (data.age === null) {
+  return \`階層:\${floor}, \${JSON.stringify(data)}\`
+}`,
+        settings: `{
+  "note": "settingsという変数名で、要素処理などでアクセスできます",
+  "1": "鈴木",
+  "2": "佐藤"
+}`
+      }
+
+
+      window.addEventListener('DOMContentLoaded', (event) => {
+        const doms = {
+          data: document.getElementById('data'),
+          out: document.getElementById('out'),
+          result: document.getElementById('result'),
+          checkChild: document.getElementById('check_child'),
+          extractChild: document.getElementById('extract_child'),
+          check: document.getElementById('check'),
+          settings: document.getElementById('settings')
+        }
+
+        Object.keys(texts).forEach(key => {
+          doms[key].value = texts[key]
+        })
+
+        document.getElementById('btn').addEventListener('click', () => {
+          doms.out.value = ''
+          try {
+            const data = JSON.parse(doms.data.value)
+            const hasChild = new Function('data', 'floor', doms.checkChild.value)
+            const extractChild = new Function('data', 'floor', doms.extractChild.value)
+            const check = new Function('data', 'floor', 'settings', doms.check.value)
+            const settings = JSON.parse(doms.settings.value || '{}')
+
+            const countMap = new Map([[true, { count: 0 }], [false, { count: 0 }]])
+
+            const checkRecursive = (d, f = 1) => {
+              if (hasChild(d, f)) {
+                extractChild(d, f).forEach(d => checkRecursive(d, f + 1))
+                return
+              }
+              const ret = check(d, f, settings)
+              if (ret && typeof ret === 'string') {
+                doms.out.value += `${ret}\n`
+              }
+              countMap.get(!!ret).count++
+            }
+
+            doms.out.value = ''
+            const items = Array.isArray(data) ? data : [data]
+            items.forEach(checkRecursive)
+
+            if (doms.out.value) {
+              doms.out.value += '\n---------------------------------------\n'
+            }
+
+            doms.out.value += `データ処理結果: true: ${countMap.get(true).count}, false: ${countMap.get(false).count}\n`
+
+            doms.result.value = JSON.stringify(data, null, 2)
+
+          } catch (e) {
+            doms.out.value = e.message
+            throw e
+          }
+        })
+      })
+    </script>
   </body>
 </html>

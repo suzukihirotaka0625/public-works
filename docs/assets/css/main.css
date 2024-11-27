@@ -25,8 +25,14 @@ h2 {
 
 h3 {
   margin-block: .5rem;
-  padding: 4px;
+  padding: 4px 0;
   font-size: 1.15rem;
+}
+
+h4 {
+  margin-block: .5rem;
+  padding: 4px 0;
+  font-size: 1rem;
 }
 
 ul {
@@ -60,7 +66,7 @@ input:focus, *::part(input):focus {
   border: 1px solid var(--link-color);
   box-shadow: 0 0 5px 1px var(--link-color);
 }
-input:focus, *::part(input)::placeholer {
+input:focus::placeholer, *::part(input)::placeholer {
   color: #999;
 }
 
@@ -97,6 +103,18 @@ input[type="radio"]:checked::after,
   border-radius: 50%;
   background: white;
 } 
+
+textarea {
+  padding: 6px 8px;
+  border: 1px solid #888;
+  border-radius: 3px;
+}
+
+textarea:focus {
+  outline: none;
+  border: 1px solid var(--link-color);
+  box-shadow: 0 0 5px 1px var(--link-color);
+}
 
 button {
   background-color: var(--link-color);
