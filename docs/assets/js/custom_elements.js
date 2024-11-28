@@ -70,12 +70,6 @@ class MyMenu extends HTMLElement {
       color: #999;
     }
   }
-  button.icon {
-    border: none;
-    padding: 0;
-    height: 20px;
-    cursor: pointer;
-  }
   @media screen and (max-width: 640px) {
     ul {
       li .submenu {
@@ -163,7 +157,7 @@ class MyMenu extends HTMLElement {
         const submenu = this.#_createSubMenu(menu.siblings)
         const svg = myUtils.strToDom(SVG.triangleDown({ color: linkColor, size: '20px' }))
         const btn = document.createElement('button')
-        btn.classList.add('icon')
+        btn.setAttribute('part', 'icon-button')
 
         btn.appendChild(svg)
         btn.addEventListener('click', (e) => {

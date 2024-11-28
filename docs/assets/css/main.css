@@ -4,6 +4,7 @@
   --border-color: #ccc;
   --width-pc: 800px;
   --is-sp: 0;
+  --body-overflow: auto;
 }
 
 * {
@@ -129,6 +130,13 @@ button {
   &:hover {
     background-color: rgb(var(--link-color-rgb) / .8);
   }
+}
+
+button.icon, *::part(icon-button) {
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background-color: transparent;
 }
 
 @media screen and (max-width: 800px) {
