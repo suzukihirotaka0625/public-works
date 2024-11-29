@@ -132,11 +132,17 @@ button {
   }
 }
 
-button.icon, *::part(icon-button) {
+button.icon, *::part(icon-button), icon-button {
   border: none;
   padding: 0;
   cursor: pointer;
   background-color: transparent;
+}
+
+icon-button:hover {
+  svg {
+    opacity: .6;;
+  }
 }
 
 @media screen and (max-width: 800px) {

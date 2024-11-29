@@ -53,11 +53,10 @@
         </section>
       </div>
     </main>
-    <script>
+    <script type="module">
+      const { codeToHtml } = await import(MyConst.SHIKI.libPath)
       const settings = {
-        'section-1-1': {
-          lang: 'typescript',
-          code: `// 設定
+        'section-1-1': `// 設定
 export type ChartSetting = {
   chartHeight: number;
   paneSize: string;
@@ -66,20 +65,14 @@ export type ChartSetting = {
   xAxisTextSize: number;
   legendWidth: number;
   legendTextLength: number;
-}`
-        },
-        'section-1-2': {
-          lang: 'typescript',
-          code: `//　設定タイプ
+}`,
+        'section-1-2': `//　設定タイプ
 type ChartSettingsVertexLengthType =
   | 'base'
   | 'smaller'
   | 'small'
-  | 'large';`
-        },
-        'section-1-3': {
-          lang: 'javascript',
-          code: `// ノーマルサイズのレーダーチャートの設定（他に拡大表示用の設定もある）
+  | 'large';`,
+        'section-1-3': `// ノーマルサイズのレーダーチャートの設定（他に拡大表示用の設定もある）
 const normalChartSettings = {
   // baseはすべて必須
   base: {
@@ -112,11 +105,8 @@ const SomeComponent = () => {
   return (
     <RaderCharts setting={createSettings(normalChartSettings, type)} />
   )
-}`
-        },
-        'section-1-4': {
-          lang: 'typescript',
-          code: `// チャートの設定
+}`,
+        'section-1-4': `// チャートの設定
 type SettingsByType = {
   [key in ChartSettingsVertexLengthType]: key extends 'base'
     ? ChartSetting
@@ -131,10 +121,9 @@ const normalChartSettings: SettingsByType = {
 const createSettings = (_settings: SettingsByType, type: ChartSettingsVertexLengthType) => {
   // 省略
 }`
-        }
       }
 
-      CodeBlock.setCodeTexts(settings)
+      CodeBlock.setCodeTexts(settings, codeToHtml)
     </script>
   </body>
 </html>

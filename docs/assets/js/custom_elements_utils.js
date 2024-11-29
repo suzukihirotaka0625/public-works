@@ -1,5 +1,3 @@
-const { codeToHtml } = await import(MyConst.SHIKI.libPath)
-
 /**
  * コードブロック（Syntax Highlighter）
  */
@@ -37,6 +35,7 @@ class CodeBlock extends HTMLElement {
       border-radius: 0 0 4px 4px;
       white-space: pre-wrap;
       line-height: 1.2;
+      font-size: 13px;
     }
   }
   `
@@ -88,11 +87,10 @@ class CodeBlock extends HTMLElement {
     this.#_root.querySelector('.code').innerHTML = value
   }
 
-  static setCodeTexts(settings) {
+  static setCodeTexts(settings, codeToHtml) {
     document.querySelectorAll('code-block').forEach(item => {
       if (item.id in settings) {
-        const setting = settings[item.id]
-        codeToHtml(setting.code, { lang: setting.lang, theme: setting.theme ?? MyConst.SHIKI.defaultTheme })
+        codeToHtml(settings[item.id], { lang: item.getAttribute('type'), theme: item.getAttribute('theme') || MyConst.SHIKI.defaultTheme })
           .then(html => item.setCode(html))
       }
     })
@@ -107,7 +105,7 @@ customElements.define('code-block', CodeBlock)
  */
 class HelpDialog extends HTMLElement {
 
-  static content = `<dialog part="aaa">
+  static content = `<dialog>
   <header>
     <h2></h2>
     <button class="close" part="icon-button">${SVG.close({ size: '26px' })}</button>
@@ -119,6 +117,9 @@ class HelpDialog extends HTMLElement {
   `
   static style = `
     :host {
+      font-weight: 400;
+      font-size: 1rem;
+      height: 20px;
       > button {
         width: 20px;
         height: 20px;

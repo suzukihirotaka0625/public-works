@@ -10,6 +10,8 @@
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/custom_elements.js" defer></script>
     <script src="../assets/js/custom_elements_utils.js" defer></script>
+    <script src="../assets/js/custom_elements_forms.js" defer></script>
+    <script type="module" src="../assets/js/code-block.js" defer></script>
     <style>
       .content > section:not(:first-of-type) + section {
         margin-top: 2rem;
@@ -34,6 +36,12 @@
 
       h3 {
         border-bottom: 1px solid #bbb;
+      }
+
+      h4:has(help-dialog) {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
       }
 
       .wrapper {
@@ -93,21 +101,37 @@
           </div>
           <div class="wrapper">
             <div>
-              <h4>下の階層があるか判定</h4>
+              <h4>
+                下の階層を判定
+                <help-dialog data-title="下の階層を判定">
+                  <div slot="body">
+                    <div class="description">以下のJSONが定義されている場合、下の階層の有無は、<span class="code">children</span>を持つかどうかで判定できる</div>
+                    <code-block id="code-input_json" type="json"></code-block>
+                    <div class="description">そのため、テキストエリアには、以下のコードを記入する。</div>
+                    <code-block id="code-check_child" type="javascript"></code-block>
+                  </div>
+                </help-dialog>
+              </h4>
               <textarea id="check_child"></textarea>
             </div>
             <div>
-              <h4>下の階層のデータを取得</h4>
+              <h4>下の階層の取得</h4>
               <textarea id="extract_child"></textarea>
             </div>
           </div>
-          <h4>データ処理</h4>
-          <div class="description">データに対する処理を行う。
-            <ul>
-              <li><span class="code">true</span>又は"文字列"を <span class="code">return</span>すると件数がカウントされます。<span class="code">return</span>された文字列と件数カウントはログ出力されます。</li>
-              <li><span class="code">settings</span>などを利用して、データの編集を行います。</li>
-            </ul>
-          </div>
+          <h4>
+            データ処理
+            <help-dialog data-title="データ処理">
+              <div slot="body">
+                <div class="description">データに対する処理を行う。
+                  <ul>
+                    <li><span class="code">true</span>又は"文字列"を <span class="code">return</span>すると件数がカウントされます。<span class="code">return</span>された文字列と件数カウントはログ出力されます。</li>
+                    <li><span class="code">settings</span>などを利用して、データの編集を行います。</li>
+                  </ul>
+                </div>
+              </div>
+            </help-dialog>
+          </h4>
           <textarea id="check">
           </textarea>
           <br/>
@@ -131,6 +155,33 @@
         </section>
       </div>
     </main>
+    <script type="module">
+      const { codeToHtml } = await import(MyConst.SHIKI.libPath)
+
+      const settings = {
+        'code-input_json': `{
+  "children": [
+    { "id": 1, "age": 10 },
+    { "id": 2, "age": 35 },
+    { "id": 3, "age": null },
+    { 
+      "children": [
+        { "id": 4, "age": 18 },
+        { "id": 5, "age": null }
+      ]
+    }
+  ]
+}`,
+        'code-check_child': `/**
+ * dataの中身
+ *  下の階層あり data: { children: [ { "id": 4, "age": 18 }, { "id": 5, "age": null } ] }
+ *  下の階層なし data: { "id": 1, "age": 10 }
+ */
+return 'children' in data`
+      }
+
+      CodeBlock.setCodeTexts(settings, codeToHtml)
+    </script>
     <script>
       const texts = {
         data: `{

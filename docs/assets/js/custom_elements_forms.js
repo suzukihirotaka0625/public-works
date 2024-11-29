@@ -1,4 +1,24 @@
 
+class IconButton extends HTMLElement {
+
+  constructor() {
+    super()
+  }
+
+  connectedCallback() {
+    if (!this.rendered) {
+      this.render()
+      this.rendered = true
+    }
+  }
+
+  render() {
+    this.innerHTML = SVG[this.getAttribute('icon')](this.dataset)
+  }
+}
+
+customElements.define('icon-button', IconButton)
+
 /**
  * ラジオボタン
  */
