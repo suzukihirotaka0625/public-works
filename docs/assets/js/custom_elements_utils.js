@@ -1,3 +1,107 @@
+const { codeToHtml } = await import(MyConst.SHIKI.libPath)
+
+/**
+ * コードブロック（Syntax Highlighter）
+ */
+class CodeBlock extends HTMLElement {
+
+  static content = `
+  <span class="tag"></span>
+  <div class="code"></div>
+  `
+  static style = `
+  .tag {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #444;
+    border-radius: 4px 4px 0 0;
+    padding: 2px .75rem;
+    font-size: .75rem;
+    color: #ddd;
+    height: 18px;
+    svg {
+      cursor: pointer;
+      &.active {
+        visibility: hidden;
+      }
+      &:hover {
+        opacity: .5;
+      }
+    }
+  }
+  .code {
+    pre {
+      padding: 1rem;
+      margin: 0;
+      border-radius: 0 0 4px 4px;
+      white-space: pre-wrap;
+      line-height: 1.2;
+    }
+  }
+  `
+
+  #_root
+
+  constructor() {
+    super()
+
+    this.#_root = myUtils.prepareCustomElement(CodeBlock, this.attachShadow({mode: "closed"}))
+  }
+
+  connectedCallback() {
+    if (!this.rendered) {
+      this.render()
+      this.rendered = true
+    }
+  }
+
+  render() {
+    const name = this.getAttribute('name') ?? ''
+
+    const tag = this.#_root.querySelector('.tag')
+
+    tag.innerHTML = SVG.copy()
+    tag.prepend(`${this.getAttribute('type')}${name ? ' / ' : ''}${name}`)
+
+    // コードのテキストをクリップボードにコピーする
+    const icon = tag.querySelector('svg')
+    icon.addEventListener('click', () => {
+      icon.classList.add('active')
+      const text = this.#_root.querySelector('.code').textContent
+
+      const copied = () => {
+        setTimeout(() => {
+          icon.classList.remove('active')
+        }, 200)
+      }
+
+      navigator.clipboard.writeText(text).then(
+        copied,
+        copied
+      )
+    })
+  }
+
+  setCode(value) {
+    if (!value) return
+    this.#_root.querySelector('.code').innerHTML = value
+  }
+
+  static setCodeTexts(settings) {
+    document.querySelectorAll('code-block').forEach(item => {
+      if (item.id in settings) {
+        const setting = settings[item.id]
+        codeToHtml(setting.code, { lang: setting.lang, theme: setting.theme ?? MyConst.SHIKI.defaultTheme })
+          .then(html => item.setCode(html))
+      }
+    })
+  }
+}
+
+customElements.define('code-block', CodeBlock)
+
+
 /**
  * ヘルプ
  */
@@ -68,8 +172,13 @@ class HelpDialog extends HTMLElement {
     super()
 
     myUtils.prepareCustomElement(HelpDialog, this.attachShadow({mode: "open"}))
+  }
 
-    this.render()
+  connectedCallback() {
+    if (!this.rendered) {
+      this.render()
+      this.rendered = true
+    }
   }
 
   render() {

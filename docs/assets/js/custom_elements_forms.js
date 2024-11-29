@@ -49,6 +49,11 @@ class RadioGroup extends HTMLElement {
    * @params { name: 'xxx', items: [ { value: 'xxx', label: 'xxx', part: 'xxx', checked: true } ] }
    */
   render({ name, items }) {
+    if (this.rendered) {
+      return
+    }
+    this.rendered = true
+
     items.forEach(item => {
       const label = document.createElement('label')
       const radio = document.createElement('input')

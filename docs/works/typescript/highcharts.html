@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../../assets/css/main.css" />
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/custom_elements.js" defer></script>
+    <script src="../../assets/js/custom_elements_utils.js" defer></script>
   </head>
   <body>
     <my-header>
@@ -52,13 +53,11 @@
         </section>
       </div>
     </main>
-    <script type="module">
-      const { codeToHtml } = await import(MyConst.SHIKI.libPath)
-
-      document.getElementById('section-1-1').setAttribute(
-        'html',
-        await codeToHtml(
-`// 設定
+    <script>
+      const settings = {
+        'section-1-1': {
+          lang: 'typescript',
+          code: `// 設定
 export type ChartSetting = {
   chartHeight: number;
   paneSize: string;
@@ -68,32 +67,19 @@ export type ChartSetting = {
   legendWidth: number;
   legendTextLength: number;
 }`
-        , {
+        },
+        'section-1-2': {
           lang: 'typescript',
-          theme: MyConst.SHIKI.defaultTheme
-        })
-      )
-
-      document.getElementById('section-1-2').setAttribute(
-        'html',
-        await codeToHtml(
-`//　設定タイプ
+          code: `//　設定タイプ
 type ChartSettingsVertexLengthType =
   | 'base'
   | 'smaller'
   | 'small'
   | 'large';`
-        , {
-          lang: 'typescript',
-          theme: MyConst.SHIKI.defaultTheme
-        })
-      )
-
-
-      document.getElementById('section-1-3').setAttribute(
-        'html',
-        await codeToHtml(
-`// ノーマルサイズのレーダーチャートの設定（他に拡大表示用の設定もある）
+        },
+        'section-1-3': {
+          lang: 'javascript',
+          code: `// ノーマルサイズのレーダーチャートの設定（他に拡大表示用の設定もある）
 const normalChartSettings = {
   // baseはすべて必須
   base: {
@@ -127,16 +113,10 @@ const SomeComponent = () => {
     <RaderCharts setting={createSettings(normalChartSettings, type)} />
   )
 }`
-        , {
-          lang: 'javascript',
-          theme: MyConst.SHIKI.defaultTheme
-        })
-      )
-
-      document.getElementById('section-1-4').setAttribute(
-        'html',
-        await codeToHtml(
-`// チャートの設定
+        },
+        'section-1-4': {
+          lang: 'typescript',
+          code: `// チャートの設定
 type SettingsByType = {
   [key in ChartSettingsVertexLengthType]: key extends 'base'
     ? ChartSetting
@@ -150,13 +130,11 @@ const normalChartSettings: SettingsByType = {
 // チャートの設定を生成する
 const createSettings = (_settings: SettingsByType, type: ChartSettingsVertexLengthType) => {
   // 省略
-}
-`
-        , {
-          lang: 'typescript',
-          theme: MyConst.SHIKI.defaultTheme
-        })
-      )
+}`
+        }
+      }
+
+      CodeBlock.setCodeTexts(settings)
     </script>
   </body>
 </html>

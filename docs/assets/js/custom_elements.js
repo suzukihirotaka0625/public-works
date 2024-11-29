@@ -119,7 +119,7 @@ class MyMenu extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'path') {
-      this.#_setMenu(newValue)
+      this.render(newValue)
     }
   }
 
@@ -128,8 +128,9 @@ class MyMenu extends HTMLElement {
    * @param {String} path 'top.works.xxx.html'
    * @returns 
    */
-  #_setMenu(path) {
-    if (!path) return
+  render(path) {
+    if (!path || this.rendered) return
+    this.rendered = true
 
     const menus = myUtils.parseMenu(path)
 
@@ -329,15 +330,15 @@ class PageList extends HTMLElement {
     this.#_root = myUtils.prepareCustomElement(PageList, this.attachShadow({mode: "closed"}))
   }
 
-
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'path') {
-      this.#_setPageList(newValue)
+      this.render(newValue)
     }
   }
 
-  #_setPageList(path) {
-    if (!path) return
+  render(path) {
+    if (!path || this.rendered) return
+    this.rendered = true
 
     const menu = myUtils.getCurrentMenu(path)
 
@@ -380,96 +381,6 @@ class PageList extends HTMLElement {
 
 customElements.define('page-list', PageList)
 
-/**
- * コードブロック（Syntax Highlighter）
- */
-class CodeBlock extends HTMLElement {
-
-  static content = `
-  <span class="tag"></span>
-  <div class="code"></div>
-  `
-  static style = `
-  .tag {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #444;
-    border-radius: 4px 4px 0 0;
-    padding: 2px .75rem;
-    font-size: .75rem;
-    color: #ddd;
-    height: 18px;
-    svg {
-      cursor: pointer;
-      &.active {
-        visibility: hidden;
-      }
-      &:hover {
-        opacity: .5;
-      }
-    }
-  }
-  .code {
-    pre {
-      padding: 1rem;
-      margin: 0;
-      border-radius: 0 0 4px 4px;
-      white-space: pre-wrap;
-      line-height: 1.2;
-    }
-  }
-  `
-
-  static observedAttributes = ['html'];
-
-  #_root
-
-  constructor() {
-    super()
-
-    this.#_root = myUtils.prepareCustomElement(CodeBlock, this.attachShadow({mode: "closed"}))
-
-    const name = this.getAttribute('name') ?? ''
-
-    const tag = this.#_root.querySelector('.tag')
-
-    tag.innerHTML = SVG.copy()
-    tag.prepend(`${this.getAttribute('type')}${name ? ' / ' : ''}${name}`)
-
-    // コードのテキストをクリップボードにコピーする
-    const icon = tag.querySelector('svg')
-    icon.addEventListener('click', () => {
-      icon.classList.add('active')
-      const text = this.#_root.querySelector('.code').textContent
-
-      const copied = () => {
-        setTimeout(() => {
-          icon.classList.remove('active')
-        }, 200)
-      }
-
-      navigator.clipboard.writeText(text).then(
-        copied,
-        copied
-      )
-    })
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'html') {
-      this.handleHtml(newValue)
-    }
-  }
-
-  handleHtml(value) {
-    if (!value) return
-    this.#_root.querySelector('.code').innerHTML = value
-  }
-}
-
-customElements.define('code-block', CodeBlock)
-
 
 /**
  * 外部リンク
@@ -488,11 +399,23 @@ class ExternalLink extends HTMLElement {
     }
   `
 
+  #_root
+
   constructor() {
     super()
 
-    const root = myUtils.prepareCustomElement(ExternalLink, this.attachShadow({mode: "closed"}), { tag: 'a' })
+    this.#_root = myUtils.prepareCustomElement(ExternalLink, this.attachShadow({mode: "closed"}), { tag: 'a' })
+  }
 
+  connectedCallback() {
+    if (!this.rendered) {
+      this.render()
+      this.rendered = true
+    }
+  }
+
+  render() {
+    const root = this.#_root
     root.href = this.getAttribute('link')
     root.target = '_blank'
     root.setAttribute('rel', 'noopener noreferrer')
