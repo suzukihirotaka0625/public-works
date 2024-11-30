@@ -99,7 +99,6 @@ class CodeBlock extends HTMLElement {
 
 customElements.define('code-block', CodeBlock)
 
-
 /**
  * ヘルプ
  */
@@ -244,7 +243,9 @@ class HelpDialog extends HTMLElement {
       if (e.target === dialog) {
         // backdropにフォーカスがあると、アニメーションがズレる
         close.focus()
-        dialog.close()
+        setTimeout(() => {
+          dialog.close()
+        })
       }
     })
   }

@@ -158,8 +158,9 @@
                 <div class="description">データに対する処理を行います。</div>
                 <div class="description">
                   <ul>
-                    <li><span class="code">true</span>又は"文字列"を <span class="code">return</span>すると件数がカウントされます。<span class="code">return</span>された文字列と件数カウントはログ出力されます。</li>
-                    <li><span class="code">settings</span>などを利用して、データの編集を行います。</li>
+                    <li><span class="code">true</span>又は"文字列"を <span class="code">return</span>すると件数がカウントされます。<br/>データ処理の最後に<span class="code">true</span>と<span class="code">false</span>の件数をログ出力します。</span></li>
+                    <li>文字列の<span class="code">return</span>もログ出力されます。</li>
+                    <li><span class="code">settings</span>を利用してデータの編集を行い、編集後のJSONも出力されます。</li>
                   </ul>
                 </div>
                 <code-block id="code-check" type="javascript"></code-block>
@@ -176,11 +177,12 @@
           <h4>ログ</h4>
           <textarea id="out"></textarea>
           <br/>
-          <h4>処理後のデータ</h4>
+          <h4>データ処理後のJSON</h4>
           <textarea id="result"></textarea>
         </section>
       </div>
     </main>
+    <footer is="my-footer"></footer>
     <script type="module">
       const { codeToHtml } = await import(MyConst.SHIKI.libPath)
 

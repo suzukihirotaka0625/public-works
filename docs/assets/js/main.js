@@ -8,9 +8,21 @@ const MENUS = {
     note: '業務で生産性や品質に貢献できる、スキルやツールなどについてまとめたサイトです。',
     children: {
       about: {
-        title: 'About Me',
+        title: 'About',
         path: 'about',
-        note: '自分のスキルセットや経験、希望する作業内容、考え方など',
+        note: '自分の経歴・スキル・希望、このサイトについて',
+        children: {
+          me: {
+            title: '自分について',
+            path: 'me.html',
+            note: '自分の経歴・スキル・希望について'
+          },
+          site: {
+            title: 'このサイトについて',
+            path: 'site.html',
+            note: 'このサイトの目的、使用されている技術について'
+          }
+        }
       },
       works: {
         title: '実績',
@@ -47,9 +59,9 @@ const MENUS = {
             note: 'いろいろなカラーコードの変換を行います。'
           },
           recursive: {
-            title: '再帰処理',
+            title: '再帰構造JSON処理',
             path: 'recursive.html',
-            note: '再帰構造を持つJSONの値チェックや編集を行います。'
+            note: '再帰構造を持つJSONの値チェックや件数カウント、データの編集を行います。'
           }
         }
       }

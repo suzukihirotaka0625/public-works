@@ -1,0 +1,17 @@
+li {
+  padding-bottom: .25rem;
+}
+dt {
+  color: #444;
+  font-weight: 700;
+  border-bottom: 1px dotted #ccc;
+}
+dd {
+  padding-block: .5rem;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+}
+span.detail {
+  display: block;
+  font-size: .9rem;
+}

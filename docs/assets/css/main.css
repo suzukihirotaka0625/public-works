@@ -17,6 +17,12 @@ body, ul {
   margin: 0;
 }
 
+body {
+  padding-bottom: 20px;
+  position: relative;
+  min-height: 100vh;
+}
+
 h2 {
   background-color: #f1f1f1;
   padding: 4px;
@@ -142,6 +148,20 @@ button.icon, *::part(icon-button), icon-button {
 icon-button:hover {
   svg {
     opacity: .6;;
+  }
+}
+
+[is="my-footer"] {
+  position: absolute;
+  bottom: 0;
+  padding-block: .25rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background-color: #f1f1f1;
+  span {
+    font-size: .75rem;
+    color: #888;
   }
 }
 

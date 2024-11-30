@@ -27,7 +27,7 @@ class MyMenu extends HTMLElement {
           }
         }
       }
-      svg {
+      button:has(svg) {
         margin-left: 6px;
       }
       .submenu {
@@ -265,6 +265,33 @@ class MyHeader extends HTMLElement {
 }
 
 customElements.define('my-header', MyHeader)
+
+/**
+ * フッター
+ */
+class MyFooter extends HTMLElement {
+
+  static start = '2024'
+
+  constructor() {
+    super()
+  }
+
+  connectedCallback() {
+    if (!this.rendered) {
+      this.render()
+      this.rendered = true
+    }
+  }
+
+  render() {
+    const end = new Date().getFullYear().toString()
+    const year = Array.from(new Set([MyFooter.start, end])).join(' - ')
+    this.innerHTML = `<span>© ${year} suzuhiro</span>`
+  }
+}
+
+customElements.define('my-footer', MyFooter, { extends: 'footer' })
 
 /**
  * ページ一覧
