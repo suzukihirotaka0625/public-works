@@ -11,7 +11,6 @@
     <script src="../assets/js/custom_elements.js" defer></script>
     <script src="../assets/js/custom_elements_utils.js" defer></script>
     <script src="../assets/js/custom_elements_forms.js" defer></script>
-    <script type="module" src="../assets/js/code-block.js" defer></script>
     <style>
       .content > section:not(:first-of-type) + section {
         margin-top: 2rem;
@@ -61,7 +60,17 @@
         color: #666;
         font-size: .8rem;
       }
-
+      summary {
+        cursor: pointer;
+        > div {
+          display: inline-block;
+          > div {
+            display: flex;
+            gap: .75rem;
+            align-items: center;
+          }
+        }
+      }
       details:has(#settings) {
         width: 100%;
         margin-block: 20px 10px;
@@ -88,8 +97,31 @@
         </section>
         <section>
           <h3>JSON</h3>
-          <div class="description">再帰構造を持つ、JSONを入力してください。</div>
+          <div class="description">再帰構造を持つ、JSONを入力してください。<br/>
+          トップレベルは配列でもオブジェクトでも動作します。<br/>
+          再帰構造は決まったルールで判定できる必要があります。
+          </div>
           <textarea id="data" placeholder="JSONデータ"></textarea>
+          <details>
+            <summary>
+              <div>
+                <div>
+                  設定
+                  <help-dialog data-title="設定">
+                    <div slot="body">
+                      <div class="description">
+                        データ処理の関数の引数で渡され、<span class="code">settings</span> という変数名で参照できます。<br/>
+                        <span class="code">JSON</span>データの識別子（idなど）で <span class="code">settings</span>のデータを参照して、
+                        <span class="code">JSON</span>の編集や、件数カウントやログ出力で使用します。
+                      </div>
+                      <code-block id="code-settings" type="javascript"></code-block>
+                    </div>
+                  </help-dialog>
+                </div>
+              </div>
+            </summary>
+            <textarea id="settings"></textarea>
+          </details>
         </section>
         <section>
           <h3>関数定義</h3>
@@ -123,24 +155,18 @@
             データ処理
             <help-dialog data-title="データ処理">
               <div slot="body">
-                <div class="description">データに対する処理を行う。
+                <div class="description">データに対する処理を行います。</div>
+                <div class="description">
                   <ul>
                     <li><span class="code">true</span>又は"文字列"を <span class="code">return</span>すると件数がカウントされます。<span class="code">return</span>された文字列と件数カウントはログ出力されます。</li>
                     <li><span class="code">settings</span>などを利用して、データの編集を行います。</li>
                   </ul>
                 </div>
+                <code-block id="code-check" type="javascript"></code-block>
               </div>
             </help-dialog>
           </h4>
-          <textarea id="check">
-          </textarea>
-          <br/>
-          <br/>
-          <details>
-            <summary>設定</summary>
-            <textarea id="settings">
-            </textarea>
-          </details>
+          <textarea id="check"></textarea>
         </section>
         <section>
           <button id="btn">実行</button>
@@ -172,12 +198,37 @@
     }
   ]
 }`,
+
         'code-check_child': `/**
  * dataの中身
  *  下の階層あり data: { children: [ { "id": 4, "age": 18 }, { "id": 5, "age": null } ] }
  *  下の階層なし data: { "id": 1, "age": 10 }
  */
-return 'children' in data`
+return 'children' in data`,
+
+        'code-check': `// 設定(settings)で、データの name を上書きします
+if (data.id in settings) data.name = settings[data.id]
+
+// age が未設定の data をログ出力します。また、truthyをreturn することで、件数がカウントされます
+if (data.age === null) {
+  return \`階層:\${floor}, \${JSON.stringify(data)}\`
+}`,
+        'code-settings': `// JSONの例
+{
+  "children": [
+    { "id": 1, age: null },
+    { "id": 2, age: 20 }
+  ]
+}
+
+// settings の例
+{
+  "1": "鈴木",
+  "2": "佐藤"
+}
+  
+// データ処理関数で、JSONの個々のデータは data で参照できますので、
+// data['name'] = settings[data.id] で、dataに name を追加できます。`
       }
 
       CodeBlock.setCodeTexts(settings, codeToHtml)
@@ -224,15 +275,27 @@ if (data.age === null) {
         }
 
         Object.keys(texts).forEach(key => {
-          doms[key].value = texts[key]
+          doms[key].placeholder = texts[key]
         })
 
         document.getElementById('btn').addEventListener('click', () => {
           doms.out.value = ''
           try {
+            if (!doms.data.value.trim()) {
+              throw new Error('「JSON」を設定してください。')
+            }
             const data = JSON.parse(doms.data.value)
+            if (!doms.checkChild.value.trim()) {
+              throw new Error('「下の階層判定」を設定してください。')
+            }
             const hasChild = new Function('data', 'floor', doms.checkChild.value)
+            if (!doms.extractChild.value.trim()) {
+              throw new Error('「下の階層取得」を設定してください。')
+            }
             const extractChild = new Function('data', 'floor', doms.extractChild.value)
+            if (!doms.check.value.trim()) {
+              throw new Error('「データ処理」を設定してください。')
+            }
             const check = new Function('data', 'floor', 'settings', doms.check.value)
             const settings = JSON.parse(doms.settings.value || '{}')
 

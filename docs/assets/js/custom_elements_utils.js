@@ -108,7 +108,7 @@ class HelpDialog extends HTMLElement {
   static content = `<dialog>
   <header>
     <h2></h2>
-    <button class="close" part="icon-button">${SVG.close({ size: '26px' })}</button>
+    <button class="close" part="icon-button">${SVG.close({ size: '30px' })}</button>
   </header>
   <section>
     <slot name="body"></slot>
@@ -136,6 +136,16 @@ class HelpDialog extends HTMLElement {
       border: 0;
       border-radius: 5px;
       box-shadow: 0 0 5px rgba(0, 0, 0, .5);
+      animation-name: fadeOut;
+      animation-fill-mode: forwards;
+      animation-duration: 200ms;
+      animation-timing-function: ease-out;
+      &[open] {
+        animation-name: fadeIn;
+        animation-fill-mode: forwards;
+        animation-duration: 200ms;
+        animation-timing-function: ease-out;
+      }
       > header {
         padding: .5rem .75rem;
         display: flex;
@@ -148,6 +158,13 @@ class HelpDialog extends HTMLElement {
           font-size: 1.1rem;
           color: #333;
         }
+        .close {
+          height: 30px;
+          path {
+            transform-origin: center;
+            transform: scale(1.3);
+          }
+        }
       }
       > section {
         padding: .75rem;
@@ -158,6 +175,29 @@ class HelpDialog extends HTMLElement {
     }
     dialog::backdrop {
       background-color: rgba(0, 0, 0, .1);
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+        display: block;
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-100px);
+        display: none;
+      }
     }
     @media screen and (max-width: 640px) {
       dialog {
@@ -202,7 +242,9 @@ class HelpDialog extends HTMLElement {
     })
     dialog.addEventListener('click', e => {
       if (e.target === dialog) {
-        dialog.close();
+        // backdropにフォーカスがあると、アニメーションがズレる
+        close.focus()
+        dialog.close()
       }
     })
   }
