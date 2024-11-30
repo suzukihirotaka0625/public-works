@@ -221,6 +221,24 @@ class HelpDialog extends HTMLElement {
     }
   }
 
+  noscroll(e){
+    if (e.target.closest('[slot]')) {
+      e.preventDefault();
+    }
+  }
+
+  setNoScroll() {
+    if (this.scrollable) return
+    document.addEventListener('touchmove', this.noscroll, {passive: false});
+    document.addEventListener('wheel', this.noscroll, {passive: false});
+  }
+  
+  unsetNoScroll(){
+    if (this.scrollable) return
+    document.removeEventListener('touchmove', this.noscroll);
+    document.removeEventListener('wheel', this.noscroll);
+  }
+
   render() {
     this.shadowRoot.querySelector('h2').textContent = this.dataset.title
     const dialog = this.shadowRoot.querySelector('dialog')
@@ -235,6 +253,12 @@ class HelpDialog extends HTMLElement {
 
     help.addEventListener('click', () => {
       dialog.showModal()
+
+      // ダイアログのコンテンツがスクロールする場合は、scroll-behaviorで制御しているため、jsの制御は不要
+      const contents = this.shadowRoot.querySelector('dialog section')
+      this.scrollable = contents.scrollHeight > contents.clientHeight
+
+      this.setNoScroll()
     })
     close.addEventListener('click', () => {
       dialog.close()
@@ -247,6 +271,9 @@ class HelpDialog extends HTMLElement {
           dialog.close()
         })
       }
+    })
+    dialog.addEventListener('close', () => {
+      this.unsetNoScroll()
     })
   }
 }
