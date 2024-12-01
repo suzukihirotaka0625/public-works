@@ -9,6 +9,171 @@
     <link rel="stylesheet" href="../assets/css/main.css" />
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/custom_elements.js" defer></script>
+    <script src="../assets/js/custom_elements_utils.js" defer></script>
+    <style>
+      #list-settings {
+        width: 100%;
+        height: 60px;
+        line-height: 1.2;
+        margin-bottom: 4px;
+      }
+      div:has(> #apply) {
+        display: flex;
+        justify-content: flex-end;
+      }
+      section + section {
+        margin-top: 2rem;
+      }
+      .browser {
+        border-radius: 6px;
+        background: #777;
+        padding: 3px;
+        margin-inline: auto;
+        width: fit-content;
+        .address-bar {
+          height: 1.5rem;
+          background: #333;
+          color: white;
+          display: flex;
+          align-items: center;
+          padding-inline: 1rem;
+          font-size: .7rem;
+          border-radius: 1rem;
+          margin: 2px 4px 4px;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+      }
+      .container {
+        padding: 1rem 5px;
+        width: 700px;
+        flex: 1;
+        border: 1px solid #ccc;
+        position: relative;
+        height: 50vh;
+        background: white;
+        a {
+          text-decoration: none;
+        }
+      }
+      .ellipsis {
+        overflow: visible;
+        path {
+          fill: var(--link-color);
+        }
+      }
+      li > a {
+        padding-inline: 1px;
+        color: var(--link-color);
+        cursor: pointer;
+        &:focus {
+          outline-offset: -1px;
+          outline: 1px solid #444;
+          border-radius: 4px;
+        }
+        &:hover {
+          opacity: .5;
+        }
+      }
+      .list {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+        height: 26px;
+        overflow: hidden;
+        > li {
+          display: flex;
+          align-items: center;
+          > a {
+            max-width: 200px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+          > button:hover {
+            opacity: .5;
+          }
+          &:not(:has(a, button)) {
+            max-width: 200px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+        }
+        > li:not(:last-of-type) {
+          position: relative;
+          padding-right: 40px;
+          &::after {
+            content: '/';
+            right: 15px;
+            position: absolute;
+            color: #888;
+          }
+        }
+      }
+      #popover-toggle {
+        width: 24px;
+        height: 22px;
+        &:focus {
+          box-shadow: none;
+          outline: 1px solid #333;
+          border-radius: 4px;
+        }
+      }
+      .popover {
+        position: absolute;
+        border: 1px solid #999;
+        background: white;
+        display: none;
+        transform: translate(-50%, 4px);
+        left: 50%;
+        min-width: 280px;
+        max-width: 350px;
+        box-shadow: 2px 2px 2px rgb(0 0 0 / .2);
+        overflow-y: auto;
+        max-height: 35vh;
+        &.open {
+          display: block;
+        }
+      }
+      .ellipsis-items {
+        list-style: none;
+        margin: 1em;
+        padding: 0;
+        max-width: 388px;
+        > li  + li {
+          margin-top: 6px;
+        }
+      }
+      .files {
+        margin-block: 1rem;
+        padding-block: 1rem;
+        border-top: 1px dotted #ccc;
+        ul {
+          list-style: none;
+          padding: 0;
+          li {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 2px 4px;
+          }
+        }
+      }
+      @media screen and (max-width: 640px) {
+        .browser {
+          width: unset;
+        }
+        .container {
+          width: 100%;
+          font-size: .8rem;
+        }
+        .popover {
+          max-width: 280px;
+        }
+      }
+    </style>
   </head>
   <body>
     <my-header>
@@ -17,10 +182,318 @@
     <main>
       <div class="content">
         <section>
-          パンクズ
+          <h2>パンクズリスト</h2>
+          <h3>要件</h3>
+          <div class="block">
+            最大10階層あるフォルダ構成<br/>
+            現在位置のフォルダの階層をパンクズリストで表示する<br/>
+            一行で表示出来ない場合は、中央の階層のフォルダをポップオーバーで表示する。
+          </div>
+        </section>
+        <section>
+          <h3>パンクズリストの表示</h3>
+          <div class="browser">
+            <div class="address-bar">http://localhost:8000/</div>
+            <div class="container">
+              <ul class="list"></ul>
+              <div class="popover">
+                <ul class="ellipsis-items"></ul>
+              </div>
+              <div class="files">
+                <ul></ul>
+              </div>
+            </div>
+          </div>
+          <div class="description">
+            任意のフォルダ階層を表示できます。<br/>
+            カンマ区切りの文字列で、表示するパンクズリストのフォルダを指定してください。
+          </div>
+          <textarea id="list-settings"></textarea>
+          <div>
+            <button id="apply">適用</button>
+          </div>
+        </section>
+        <section>
+          <h3>補足説明</h3>
+          <div class="block">
+            現場で実装した時の環境と実装方法<
+            <ul>
+              <li>React</li>
+              <li>Material UI</li>
+              <li>リストの幅の計算とポップオーバーのリスト生成は、<span class="code">useLayoutEffect</span>で行いました</li>
+              <li>汎用的に使用できるように、パンクズリストのコンポーネントはTypeScriptのジェネリクス指定でフォルダ構成以外のデータも使用可能</li>
+            </ul>
+          </div>
+        </section>
+        <section>
+          <h3>コード抜粋</h3>
+          <div class="block">
+            ポップオーバーのリストを生成するコードです。<br/>
+            実際に現場で使用したコードのコピーではなく、このサイトように再編集したものです。（幅計算部分のロジックはほぼ同じです。）<br/>
+            <div class="description"> コード全体は、開発者ツールで参照してください。</div>
+          </div>
+          <code-block id="code-1" type="javascript"></code-block>
         </section>
       </div>
     </main>
     <footer is="my-footer"></footer>
+    <script>
+      // 初期表示
+      const values = ['Cドライブ', '長いフォルダ名長いフォルダ名長いフォルダ名', '株式会社スズヒロ', '受領資料', '施策◯◯◯◯◯◯', '要件定義書']
+
+      // 文字列の配列を、パンクズのitemに変換する
+      const arrayToItem = _values => _values.map(v => ({ title: v, isEllipsis: false }))
+
+      // 省略表示の幅
+      const ELLIPSIS_WIDTH = 64
+      // puddingnのサイズ
+      const CONTAINER_PUDDING_INLINE_SIZE = 10
+
+      const renderFiles = () => {
+        const filesUl = document.querySelector('.files ul')
+        const folders = ['202411', '202412']
+        const files = ['xxxxxxxxx.xlsx', 'xxxxxxxxxx.jpg', 'xxxxxxxxx.txt']
+        const flagment = document.createDocumentFragment()
+
+        const renderLi = (icon, name) => {
+          const li = document.createElement('li')
+          li.innerHTML = icon
+          const span = document.createElement('span')
+          span.textContent = name
+          li.append(span)
+          flagment.append(li)
+        }
+
+        const folder = SVG.folder()
+        folders.forEach(name => {
+          renderLi(folder, name)
+        })
+        const file = SVG.file()
+        files.forEach(name => {
+          renderLi(file, name)
+        })
+
+        filesUl.replaceChildren(flagment)
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const listSettings = document.getElementById('list-settings')
+        listSettings.value = values.join(',')
+
+        const apply = document.getElementById('apply')
+
+        const addressBar = document.querySelector('.address-bar')
+
+        const displayUl = document.querySelector('.list')
+        const ellipsisUl = document.querySelector('.ellipsis-items')
+        const popover = document.querySelector('.popover')
+        const container = document.querySelector('.container')
+
+        /**
+         * パンクズリスト描画
+         */
+        const renderDisplayItems = items => {
+          const itemLength = items.length
+          const flagment = document.createDocumentFragment()
+          items.forEach((item, i) => {
+            const li = document.createElement('li')
+            if (item.isEllipsis) {
+              li.classList.add('ellipsis')
+              li.innerHTML = `<button id="popover-toggle" class="icon">
+                ${SVG.ellipsis()}
+                </button>`
+
+              flagment.append(li)
+
+              li.firstElementChild.addEventListener('click', e => {
+                e.preventDefault()
+                e.stopPropagation()
+                const popover = document.querySelector('.popover')
+                // const ellipsisRect = li.firstElementChild.getBoundingClientRect()
+                // const containerRect = container.getBoundingClientRect()
+                // popover.style.translate = `${ellipsisRect.left - containerRect.left}px 4px`
+                popover.classList.toggle('open')
+              })
+              return
+            }
+            if (i + 1 === itemLength) {
+              li.textContent = item.title
+              flagment.append(li)
+              return
+            }
+            const a = document.createElement('a')
+            a.textContent = item.title
+            a.href = 'javascript:void(0)'
+            li.append(a)
+            flagment.append(li)
+          })
+          displayUl.replaceChildren(flagment)
+        }
+
+        /**
+         * 省略ポップオーバー描画
+         */
+        const renderEllipsisItems = items => {
+          const flagment = document.createDocumentFragment()
+          items.forEach(item => {
+            const li = document.createElement('li')
+            const a = document.createElement('a')
+            a.textContent = item.title
+            a.href = 'javascript:void(0)'
+            li.append(a)
+            flagment.append(li)
+          })
+          
+          ellipsisUl.replaceChildren(flagment)
+        }
+
+        const calcurateAndReRender = (items) => {
+          if (items.length === 0) return
+          // 描画されたリストの幅などを取得する
+          const rects = Array.from(displayUl.getElementsByTagName('li')).map(
+            (li, i) => {
+              const rect = li.getBoundingClientRect()
+              return {
+                index: i,
+                width: rect.width,
+                top: rect.top
+              }
+            }
+          )
+
+          // 改行されているか判定
+          if (rects[0].top === rects[rects.length - 1].top) return
+
+          // パンクズリストの最大幅（省略表示とpudding分マイナス）
+          const MAX_WIDTH = container.clientWidth - ELLIPSIS_WIDTH - CONTAINER_PUDDING_INLINE_SIZE
+          // 幅合計
+          let totalWidth = 0
+          // リストの両端から最大幅に達するまで幅を合計する
+          for (let i = 0; i < items.length; i++) {
+            const index = i % 2 === 0 ? 0 : rects.length - 1
+            totalWidth += rects[index].width
+            if (totalWidth > MAX_WIDTH) {
+              // オーバーした場合、戻して、ループを抜ける
+              break
+            }
+            // チェック済の要素を削除
+            rects.splice(index, 1)
+          }
+
+          const newItems = [...items]
+          // rectsの残りがポップオーバーリスト表示になるため、リストを分割する
+          const ellipsisItems = newItems.splice(rects[0].index, rects.length, {
+            isEllipsis: true
+          })
+          renderDisplayItems(newItems)
+          renderEllipsisItems(ellipsisItems)
+        }
+
+        const checkListEllipsis = () => {
+          Array.from(displayUl.getElementsByTagName('li')).forEach(item => {
+            const target = item.querySelector('a') || item
+            if (target.offsetWidth < target.scrollWidth) {
+              target.title = target.textContent
+            }
+          })
+        }
+
+        const render = items => {
+          addressBar.textContent = `http://localhost:8000/${items.slice(-1)[0].title}`
+          // 一旦描画する
+          renderDisplayItems(items)
+          // 計算して再描画
+          calcurateAndReRender(items)
+          // 省略表示されているパンクズにtitle設定
+          checkListEllipsis()
+        }
+
+        render(arrayToItem(values))
+
+        renderFiles()
+
+        // 他の場所クリックでポップオーバーを閉じる
+        container.addEventListener('click', e => {
+          if (e.target.closest('.popover')) return
+          document.querySelector('.popover')?.classList.remove('open')
+        })
+
+        const getCurrentItems = () =>  arrayToItem(listSettings.value.split(',').map(v => v.replace(/^\s+|\s+$/g, '')).filter(Boolean).slice(0, 10))
+
+        // 画面リサイズで再描画する
+        let timer
+        window.addEventListener('resize', () => {
+          if (timer !== false) {
+            clearTimeout(timer);
+          }
+          timer = setTimeout(function () {
+            document.querySelector('.popover')?.classList.remove('open')
+            render(getCurrentItems())
+          }, 100);
+        })
+
+        // テキストエリアに指定した値を適用する
+        apply.addEventListener('click', () => {
+          const items = getCurrentItems()
+          if (items.length === 0) return
+          render(items)
+        })
+      })
+    </script>
+       <script type="module">
+        const { codeToHtml } = await import(MyConst.SHIKI.libPath)
+        const settings = {
+          'code-1': `/*
+ * 幅計算とリスト再描画
+ * 描画済のパンクズリストから、折り返し表示の場合は省略表示にしてポップオーバーでリスト表示させる
+ * @params {Array} items パンクズリスト
+ */
+const calcurateAndReRender = (items) => {
+  if (items.length === 0) return
+  // 描画されたリストの幅などを取得する (displayUl パンクズリストの ULタグ)
+  const rects = Array.from(displayUl.getElementsByTagName('li')).map(
+    (li, i) => {
+      const rect = li.getBoundingClientRect()
+      return {
+        index: i,
+        width: rect.width,
+        top: rect.top
+      }
+    }
+  )
+
+  // 改行されているか判定 (先頭と末尾の要素の top が異なれば折り返し表示されている)
+  if (rects[0].top === rects[rects.length - 1].top) return
+
+  // パンクズリストの最大幅（省略表示とpudding分マイナス）
+  const MAX_WIDTH = container.clientWidth - ELLIPSIS_WIDTH - CONTAINER_PUDDING_INLINE_SIZE
+  // 幅合計
+  let totalWidth = 0
+  // リストの両端から最大幅に達するまで幅を合計する
+  for (let i = 0; i < items.length; i++) {
+    const index = i % 2 === 0 ? 0 : rects.length - 1
+    totalWidth += rects[index].width
+    if (totalWidth > MAX_WIDTH) {
+      // オーバーした場合、戻して、ループを抜ける
+      break
+    }
+    // チェック済の要素を削除
+    rects.splice(index, 1)
+  }
+
+  const newItems = [...items]
+  // rectsの残りがポップオーバーリスト表示になるため、リストを分割する
+  const ellipsisItems = newItems.splice(rects[0].index, rects.length, {
+    isEllipsis: true
+  })
+  // パンクズリストの描画
+  renderDisplayItems(newItems)
+  // 省略表示のポップオーバーリストの描画
+  renderEllipsisItems(ellipsisItems)
+}`,
+        }
+  
+        CodeBlock.setCodeTexts(settings, codeToHtml)
+      </script>
   </body>
 </html>

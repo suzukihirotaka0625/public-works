@@ -180,13 +180,18 @@ icon-button:hover {
   }
 }
 
+.block {
+  margin-block: 1rem;
+  line-height: 1.8;
+}
+
 /* 説明ブロック */
 .description {
   margin-block: 1rem;
   font-size: .8rem;
   line-height: 1.8;
 }
-li > .description {
+:is(li, .block) > .description {
   margin-block: 0;
 }
 
