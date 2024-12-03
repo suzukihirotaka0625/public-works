@@ -34,11 +34,10 @@ class MyMenu extends HTMLElement {
         position: absolute;
         z-index: 1;
         box-sizing: border-box;
-        padding: 6px;
+        padding: 8px;
         top: calc(100% - 4px);
         left: 0;
-        min-width: 100%;
-        font-size: .9rem;
+        min-width: 200px;
         background-color: white;
         border: 1px solid #999;
         display: none;
@@ -52,7 +51,7 @@ class MyMenu extends HTMLElement {
         li {
           width: max-content;
           min-width: 100px;
-          padding: 2px 6px 2px 4px;
+          padding: 3px 6px 3px 5px;
           &:after {
             content: '';
           }
@@ -78,7 +77,7 @@ class MyMenu extends HTMLElement {
         li {
           font-size: 1rem;
           width: unset;
-          padding-block: .5rem;
+          padding: .5rem;
         }
         .submenu-header {
           display: block;

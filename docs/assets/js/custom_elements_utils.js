@@ -280,3 +280,116 @@ class HelpDialog extends HTMLElement {
 }
 
 customElements.define('help-dialog', HelpDialog)
+
+class WebBrowser extends HTMLElement {
+  static content = `
+    <div class="browser">
+      <div class="address-bar"></div>
+      <div class="web-view">
+        <slot name="body"></slot>
+      </div>
+    </div>
+  `
+  static style = `
+    :host {
+      --web-view-width: 700px;
+      --web-view-height: 50vh;
+      * {
+        box-sizing: border-box;
+      }
+    }
+    .browser {
+      border-radius: 6px;
+      background: #777;
+      padding: 3px;
+      margin-inline: auto;
+      width: fit-content;
+      .address-bar {
+        height: 1.5rem;
+        background: #333;
+        color: white;
+        display: flex;
+        align-items: center;
+        padding-inline: 1rem;
+        font-size: .7rem;
+        border-radius: 1rem;
+        margin: 2px 4px 4px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+    .web-view {
+      padding: 1rem 5px;
+      width: var(--web-view-width);
+      flex: 1;
+      border: 1px solid #ccc;
+      position: relative;
+      height: var(--web-view-height);
+      background: white;
+      a {
+        text-decoration: none;
+      }
+    }
+    @media screen and (max-width: 800px) {
+      .browser {
+        width: unset;
+      }
+      .web-view {
+        width: 100%;
+        font-size: .8rem;
+      }
+    }
+  `
+
+  static observedAttributes = ['url']
+
+  #_addressBar
+  #_webView
+
+  constructor() {
+    super()
+
+    myUtils.prepareCustomElement(WebBrowser, this.attachShadow({mode: "open"}))
+
+    this.#_addressBar = this.shadowRoot.querySelector('.address-bar')
+    this.#_webView = this.shadowRoot.querySelector('.web-view')
+
+    const host = this.shadowRoot.styleSheets[0].rules[0]
+
+    const [width, height] = [this.getAttribute('view-width'), this.getAttribute('view-height')]
+    if (width) {
+      host.style.setProperty('--web-view-width', width)
+    }
+    if (height) {
+      host.style.setProperty('--web-view-height', height)
+    }
+  }
+
+  connectedCallback() {
+    if (!this.rendered) {
+      this.render()
+      this.rendered = true
+    }
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'url') {
+      if (this.addressBar)
+        this.addressBar.textContent = newValue
+    }
+  }
+
+  render() {
+    this.#_addressBar.textContent = this.getAttribute('url')
+  }
+
+  get addressBar() {
+    return this.#_addressBar
+  }
+
+  get webView() {
+    return this.#_webView
+  }
+}
+
+customElements.define('web-browser', WebBrowser)

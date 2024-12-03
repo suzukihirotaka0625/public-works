@@ -24,38 +24,6 @@
       section + section {
         margin-top: 2rem;
       }
-      .browser {
-        border-radius: 6px;
-        background: #777;
-        padding: 3px;
-        margin-inline: auto;
-        width: fit-content;
-        .address-bar {
-          height: 1.5rem;
-          background: #333;
-          color: white;
-          display: flex;
-          align-items: center;
-          padding-inline: 1rem;
-          font-size: .7rem;
-          border-radius: 1rem;
-          margin: 2px 4px 4px;
-          white-space: nowrap;
-          overflow: hidden;
-        }
-      }
-      .container {
-        padding: 1rem 5px;
-        width: 700px;
-        flex: 1;
-        border: 1px solid #ccc;
-        position: relative;
-        height: 50vh;
-        background: white;
-        a {
-          text-decoration: none;
-        }
-      }
       .ellipsis {
         overflow: visible;
         path {
@@ -162,13 +130,6 @@
         }
       }
       @media screen and (max-width: 800px) {
-        .browser {
-          width: unset;
-        }
-        .container {
-          width: 100%;
-          font-size: .8rem;
-        }
         .popover {
           max-width: 280px;
         }
@@ -192,9 +153,8 @@
         </section>
         <section>
           <h3>パンクズリストの表示</h3>
-          <div class="browser">
-            <div class="address-bar">http://localhost:8000/</div>
-            <div class="container">
+          <web-browser url="http://localhost:8000/">
+            <div slot="body">
               <ul class="list"></ul>
               <div class="popover">
                 <ul class="ellipsis-items"></ul>
@@ -203,7 +163,7 @@
                 <ul></ul>
               </div>
             </div>
-          </div>
+          </web-browser>
           <div class="description">
             任意のフォルダ階層を表示できます。<br/>
             カンマ区切りの文字列で、表示するパンクズリストのフォルダを指定してください。
@@ -282,12 +242,12 @@
 
         const apply = document.getElementById('apply')
 
-        const addressBar = document.querySelector('.address-bar')
+        const browser = document.querySelector('web-browser')
 
         const displayUl = document.querySelector('.list')
         const ellipsisUl = document.querySelector('.ellipsis-items')
         const popover = document.querySelector('.popover')
-        const container = document.querySelector('.container')
+        const container = browser.webView
 
         /**
          * パンクズリスト描画
@@ -399,7 +359,7 @@
         }
 
         const render = items => {
-          addressBar.textContent = `http://localhost:8000/${items.slice(-1)[0].title}`
+          browser.setAttribute('url', `http://localhost:8000/${items.slice(-1)[0].title}`)
           // 一旦描画する
           renderDisplayItems(items)
           // 計算して再描画
@@ -422,7 +382,11 @@
 
         // 画面リサイズで再描画する
         let timer
+        let currentWidth = window.innerWidth
         window.addEventListener('resize', () => {
+          if (currentWidth === window.innerWidth) return
+          currentWidth = window.innerWidth
+
           if (timer !== false) {
             clearTimeout(timer);
           }
