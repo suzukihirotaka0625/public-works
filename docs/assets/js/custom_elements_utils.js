@@ -34,6 +34,7 @@ class CodeBlock extends HTMLElement {
       margin: 0;
       border-radius: 0 0 4px 4px;
       white-space: pre-wrap;
+      word-break: break-all;
       line-height: 1.2;
       font-size: 13px;
     }
