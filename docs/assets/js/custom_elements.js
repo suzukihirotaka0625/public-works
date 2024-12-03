@@ -36,8 +36,9 @@ class MyMenu extends HTMLElement {
         box-sizing: border-box;
         padding: 8px;
         top: calc(100% - 4px);
-        left: 0;
-        min-width: 200px;
+        left: var(--submenu-left, 0);
+        right: var(--submenu-right, auto);
+        min-width: max(200px, 100%);
         background-color: white;
         border: 1px solid #999;
         display: none;
@@ -169,9 +170,22 @@ class MyMenu extends HTMLElement {
               item.classList.remove('active')
             })
 
-            // SP用に位置を取得
+            // サブメニューの位置調整
             const parentRect = submenu.parentElement.getBoundingClientRect()
-            submenu.style.setProperty('--submenu-left', `${-parentRect.left + 10}px`)
+            if (myUtils.isSp()) {
+              // SP
+              submenu.style.setProperty('--submenu-left', `${-parentRect.left + 10}px`)
+            } else {
+              // PC
+              if (window.innerWidth - parentRect.right < 200) {
+                // 画面右寄りの場合は、メニューの右端に合わせる
+                submenu.style.setProperty('--submenu-left', 'auto')
+                submenu.style.setProperty('--submenu-right', '0')
+              } else {
+                submenu.style.setProperty('--submenu-left', '0')
+                submenu.style.setProperty('--submenu-right', 'auto')
+              }
+            }
           }
           submenu.classList.toggle('active')
         })
