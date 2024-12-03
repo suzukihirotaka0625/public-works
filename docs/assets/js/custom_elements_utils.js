@@ -326,9 +326,6 @@ class WebBrowser extends HTMLElement {
       position: relative;
       height: var(--web-view-height);
       background: white;
-      a {
-        text-decoration: none;
-      }
     }
     @media screen and (max-width: 800px) {
       .browser {
