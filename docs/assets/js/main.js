@@ -67,6 +67,11 @@ const MENUS = {
             title: '再帰構造JSON処理',
             path: 'recursive.html',
             note: '再帰構造を持つJSONの値チェックや件数カウント、データの編集を行います。'
+          },
+          markdown: {
+            title: 'マークダウン生成',
+            path: 'markdown.html',
+            note: 'マークダウンを生成します。'
           }
         }
       }
