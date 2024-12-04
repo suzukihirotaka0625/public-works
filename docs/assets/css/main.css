@@ -165,7 +165,7 @@ icon-button:hover {
   }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 840px) {
   main .content {
     width: 100%;
   }

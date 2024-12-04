@@ -10,6 +10,11 @@
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/custom_elements.js" defer></script>
     <script src="../../assets/js/custom_elements_utils.js" defer></script>
+    <style>
+      section + section {
+        margin-top: 2rem;
+      }
+    </style>
   </head>
   <body>
     <my-header>
@@ -19,9 +24,159 @@
       <div class="content">
         <section>
           <h2>バナー</h2>
+          <h3>背景</h3>
+          <div>
+            トップ画面で、トーストによる通知を表示します。<br/>
+            通知の種類は大きく分けて、以下の3つになり、上2つは共通コンポーネントが用意されています。
+          </div>
+          <div class="block">
+            <ul>
+              <li>テキスト</li>
+              <li>バナー画像</li>
+              <li>カスタム</li>
+            </ul>
+          </div>
+        </section>
+        <section>
+          <h3>課題</h3>
+          <div>
+            バナー画像について<br/>
+            バナーの種類がいくつかあり、画像のURLやリンク先のURL、alt属性などを共通通知コンポーネントの<span class="code">props</span>に指定します<br/>
+            バナーの種類により決まった形式があり、型定義することで設定値に不備があっても検知できるようにしたい
+          </div>
+        </section>
+        <section>
+          <h3>バナーの種類</h3>
+          <div class="block">
+            2種類のバナーがあり、以下のように型定義します。
+          </div>
+          <code-block id="section-1" type="typescript"></code-block>
+        </section>
+        <section>
+          <h3>バナー通知コンポーネント</h3>
+          <div class="block">
+            共通のバナー通知コンポーネントです。<br/>
+            上で定義したバナーを表示します。
+          </div>
+          <code-block id="section-2" type="jsx"></code-block>
+          <div class="block"">通知コンポーネントを呼び出す側の実装です。</div>
+          <code-block id="section-3" type="jsx"></code-block>
+          <div class="block">
+            「毎月の機能リリースのまとめバナー」を設定していますが、<span class="code">bannerPath</span>などの<span class="code">props</span>
+             の形式を間違えないように、型を効かせるようにするのが課題です
+          </div>
+        </section>
+        <section>
+          <h3>バナー通知コンポーネントの型定義</h3>
+          <div class="block">
+            バナーの型とキーを定義して、コンポーネントをジェネリクスでバナーのキーを指定できるようにします。
+          </div>
+          <code-block id="section-4" type="tsx"></code-block>
+          <div class="block">バナー通知コンポーネントを呼び出す側は、単純にジェネリクスでバナーのキーを指定するだけになります。<br/>
+            これで、型と異なる<span class="code">props</span>を指定するとエラーになりますので、ミスがなくなります。
+          </div>
+          <code-block id="section-5" type="tsx"></code-block>
         </section>
       </div>
     </main>
     <footer is="my-footer"></footer>
+    <script type="module">
+      const { codeToHtml } = await import(MyConst.SHIKI.libPath)
+      const settings = {
+        'section-1': `// バナー型のインターフェース
+interface BannerBaseType {
+  // 画像のパス
+  bannerPath: string;
+  // バナークリック時のリンク先
+  linkUrl: \`https//example.com/\${string}\`;
+  // クリックログのキー
+  logKey: string;
+  alt?: string;
+  // 画像の幅
+  width?: number;
+  // 画像の高さ
+  height?: number;
+}
+
+// 毎月の機能リリースのまとめバナー
+interface Monthly extends BannerBaseType {
+  bannerPath: \`banner/monthly/\${YYYY}\${MM}.svg\`;
+  logKey: \`monthly_\${YYYY}_\${MM}\`;
+  alt: \`\${YYYY}年\${M}月リリースの機能\`;
+}
+
+// 臨時のピックアップニュースバナー
+interface Pickup extends BannerBaseType {
+  bannerPath: \`banner/pickup/\${string}.\${'svg' | 'png'}\`;
+  logKey: \`pickup_\${string}\`;
+}`,
+        'section-2': `export const BannerNotification = ({
+  bannerPath,
+  linkUrl,
+  logKey,
+  alt = '',
+  width = DEFAULT_WIDTH,
+  height = DEFAULT_HEIGHT,
+}: PropsWithChildren<Props<T>>): React.ReactElement => {
+  const [bannerSrc, setBannerSrc] = useState<string>()
+
+  useEffect(() => {
+    import(\`@src/images/\${bannerPath}\`).then(res => {
+      setBannerSrc(res.default);
+    })
+  }, [])
+
+  const onClickBanner = useEventLog({
+    linkUrl,
+    logKey,
+  })
+
+  return (
+    <Wrapper onClick={onClickBanner} width={width} height={height}>
+      <img src={bannerSrc} alt={alt} width={width} height={height} />
+    </Wrapper>
+  )
+}`,
+        'section-3': `<BannerNotification
+  bannerPath="new_release/summary_202302.svg"
+  linkUrl="https://example.com/monthly-202412/"
+  logTarget="monthly_2024_12"
+  alt="2024年12月リリースの機能"
+/>`,
+        'section-4': `type Banner = {
+  monthly: Monthly;
+  pickup: Pickup;
+}
+
+interface Props<T extends keyof Banner> {
+  bannerPath: Banner[T]['bannerPath'];
+  linkUrl: Banner[T]['linkUrl'];
+  logTarget: Banner[T]['logTarget'];
+  alt?: Banner[T]['alt'];
+  width?: Banner[T]['width'];
+  height?: Banner[T]['height'];
+}
+
+export const BannerNotification = <T extends keyof Banner>({
+  bannerPath,
+  linkUrl,
+  logKey,
+  alt = '',
+  width = DEFAULT_WIDTH,
+  height = DEFAULT_HEIGHT,
+}: PropsWithChildren<Props<T>>): React.ReactElement => {
+  // 省略 
+}`,
+      'section-5': `<BannerNotification<'monthly'>
+  bannerPath="new_release/summary_202302.svg"
+  linkUrl="https://example.com/monthly-202412/"
+  logKey="monthly_2024_12"
+  alt="2024年12月リリースの機能"
+/>`
+
+}
+
+      CodeBlock.setCodeTexts(settings, codeToHtml)
+    </script>
   </body>
 </html>
