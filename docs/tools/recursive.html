@@ -33,10 +33,6 @@
         height: 200px;
       }
 
-      h3 {
-        border-bottom: 1px solid #bbb;
-      }
-
       h4:has(help-dialog) {
         display: flex;
         align-items: center;
@@ -96,7 +92,7 @@
           <page-list></page-list>
         </section>
         <section>
-          <h3>JSON</h3>
+          <h3 class="under-line">JSON</h3>
           <div class="description">再帰構造を持つ、JSONを入力してください。<br/>
           トップレベルは配列でもオブジェクトでも動作します。<br/>
           再帰構造は決まったルールで判定できる必要があります。
@@ -124,7 +120,7 @@
           </details>
         </section>
         <section>
-          <h3>関数定義</h3>
+          <h3 class="under-line">関数定義</h3>
           <div class="description">
             各種関数を定義してください。<br/>
             <span class="note">※ 各関数、第1引数は <span class="code">data</span> はデータ、第2引数 <span class="code">floor</span> は階層になります。</span>
@@ -173,7 +169,7 @@
           <button id="btn">実行</button>
         </section>
         <section>
-          <h3>実行結果</h3>
+          <h3 class="under-line">実行結果</h3>
           <h4>ログ</h4>
           <textarea id="out"></textarea>
           <br/>

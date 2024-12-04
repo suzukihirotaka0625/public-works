@@ -34,6 +34,9 @@ h3 {
   margin-block: .5rem;
   padding: 4px 0;
   font-size: 1.15rem;
+  &.under-line {
+    border-bottom: 1px dotted #ccc;
+  }
 }
 
 h4 {

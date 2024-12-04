@@ -24,7 +24,7 @@
       <div class="content">
         <section>
           <h2>Reactのジェネリクスコンポーネント</h2>
-          <h3>背景</h3>
+          <h3 class="under-line">背景</h3>
           <div>
             トップ画面で、トーストによる通知を表示します。<br/>
             通知の種類は大きく分けて、以下の3つになり、上2つは共通コンポーネントが用意されています。
@@ -38,7 +38,7 @@
           </div>
         </section>
         <section>
-          <h3>課題</h3>
+          <h3 class="under-line">課題</h3>
           <div>
             バナー画像について<br/>
             バナーの種類がいくつかあり、画像のURLやリンク先のURL、alt属性などを共通通知コンポーネントの<span class="code">props</span>に指定します<br/>
@@ -46,14 +46,14 @@
           </div>
         </section>
         <section>
-          <h3>バナーの種類</h3>
+          <h3 class="under-line">バナーの種類</h3>
           <div class="block">
             2種類のバナーがあり、以下のように型定義します。
           </div>
           <code-block id="section-1" type="typescript"></code-block>
         </section>
         <section>
-          <h3>バナー通知コンポーネント</h3>
+          <h3 class="under-line">バナー通知コンポーネント</h3>
           <div class="block">
             共通のバナー通知コンポーネントです。<br/>
             上で定義したバナーを表示します。
@@ -67,7 +67,7 @@
           </div>
         </section>
         <section>
-          <h3>バナー通知コンポーネントの型定義</h3>
+          <h3 class="under-line">バナー通知コンポーネントの型定義</h3>
           <div class="block">
             バナーの型とキーを定義して、コンポーネントをジェネリクスでバナーのキーを指定できるようにします。
           </div>
@@ -140,7 +140,7 @@ interface Pickup extends BannerBaseType {
         'section-3': `<BannerNotification
   bannerPath="new_release/summary_202302.svg"
   linkUrl="https://example.com/monthly-202412/"
-  logTarget="monthly_2024_12"
+  logKey="monthly_2024_12"
   alt="2024年12月リリースの機能"
 />`,
         'section-4': `type Banner = {
@@ -151,7 +151,7 @@ interface Pickup extends BannerBaseType {
 interface Props<T extends keyof Banner> {
   bannerPath: Banner[T]['bannerPath'];
   linkUrl: Banner[T]['linkUrl'];
-  logTarget: Banner[T]['logTarget'];
+  logKey: Banner[T]['logKey'];
   alt?: Banner[T]['alt'];
   width?: Banner[T]['width'];
   height?: Banner[T]['height'];

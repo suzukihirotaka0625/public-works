@@ -19,24 +19,24 @@
       <div class="content">
         <section>
           <h2>Highchartsの設定</h2>
-          <h3>背景</h3>
-          <div class="description">
+          <h3 class="under-line">背景</h3>
+          <div class="block">
             <external-link name="Highcharts" link="https://www.highcharts.com/" size="14"></external-link>
-で、レーダーチャートを描画する機能がありました。<br/>
+で、レーダーチャートを描画する機能<br/>
 レーダーチャートの頂点の数により、チャート本体の大きさや項目ラベルの位置などが異なり、その結果項目ラベルや凡例の見切れが発生するため、頂点の数によりチャートの項目ラベルの位置やテキストの大きさなどを調整する必要がありました。<br/>
 以下、チャートの設定項目です。
           </div>
-          <h3>実装</h3>
+          <h3 class="under-line">実装</h3>
           <code-block id="section-1-1" type="typescript"></code-block>
-          <div class="description">
+          <div class="block">
             基本設定と調整が必要なタイプのユニオンを以下のように定義します。
           </div>
           <code-block id="section-1-2" type="typescript"></code-block>
-          <div class="description">
+          <div class="block">
             レーダーチャートの設定と利用方法の例です。
           </div>
           <code-block id="section-1-3" type="javascript"></code-block>
-          <div class="description">
+          <div class="block">
             レーダーチャート設定の型を定義します。<br/>
             上記コードの<span class="code">normalChartSettings</span>の型になります。<br/>
             要件は、
@@ -47,7 +47,7 @@
             です。
           </div>
           <code-block id="section-1-4" type="typescript"></code-block>
-          <div class="description">
+          <div class="block">
             <span class="code">base</span>とその他を、<span class="code">[key in ChartSettingsVertexLengthType]: key extends 'base'</span>で分岐して、その他の場合は<span class="code">Partial</span>でオプションにします。
           </div>
         </section>

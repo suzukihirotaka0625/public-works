@@ -47,33 +47,35 @@
         </section>
         <section>
           <h3>フォーマット</h3>
-          <radio-group id="radio-format">
-            <template>
-{
-  "name": "format",
-  "items": [
-    { "value": "default", "label": "rgb(255 218 27 / 0.2)", "part": "code", "checked": true },
-    { "value": "legacy", "label": "rgba(255, 218, 27, 0.2)", "part": "code" }
-  ]
-}
-            </template>
-          </radio-group>
+          <div class="block">
+            <radio-group id="radio-format">
+              <template>
+  {
+    "name": "format",
+    "items": [
+      { "value": "default", "label": "rgb(255 218 27 / 0.2)", "part": "code", "checked": true },
+      { "value": "legacy", "label": "rgba(255, 218, 27, 0.2)", "part": "code" }
+    ]
+  }
+              </template>
+            </radio-group>
+          </div>
         </section>
         <section>
           <h3>16進数 -> 10進数</h3>
-          <div>
+          <div class="block">
             <input id="c1_in" placeholder="#FF9966"/> <button id="c1_btn">変換</button> <input id="c1_out" /> <div class="color" />
           </div>
         </section>
         <section>
           <h3>10進数 -> 16進数</h3>
-          <div>
+          <div class="block">
             <input id="c2_in" placeholder="255 218 27"/> <button id="c2_btn">変換</button> <input id="c2_out" /> <div class="color" />
           </div>
         </section>
         <section>
           <h3>10進数 + 透明度 -> 10進数</h3>
-          <div>
+          <div class="block">
             <input id="c3_in" placeholder="255 218 27 / 0.2" /> <button id="c3_btn">変換</button> <input id="c3_out" /> <div class="color" />
           </div>
         </section>
