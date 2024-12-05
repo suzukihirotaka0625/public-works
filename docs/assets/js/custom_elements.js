@@ -343,6 +343,15 @@ class PageList extends HTMLElement {
   }
   h3 {
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    .file-icon {
+      margin-bottom: 1px;
+      path {
+        fill: #f1f1ff;
+      }
+    }
   }
   .children {
     display: grid;
@@ -394,6 +403,14 @@ class PageList extends HTMLElement {
     }
   }
 
+  #_getFileIcon(menu) {
+    const option = { color: '#888' }
+    const isFile = menu.path.endsWith('.html')
+    const icon = myUtils.strToDom(isFile ? SVG.file(option) : SVG.folder(option))
+    icon.firstElementChild.classList.add('file-icon')
+    return icon
+  }
+
   render(path) {
     if (!path || this.rendered) return
     this.rendered = true
@@ -422,6 +439,7 @@ class PageList extends HTMLElement {
         const link = document.createElement('a')
         link.href = item.path
         cardTitle.textContent = item.title
+        cardTitle.prepend(this.#_getFileIcon(item))
         card.appendChild(cardTitle)
         link.appendChild(card)
         if (item.note) {
