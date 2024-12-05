@@ -16,19 +16,26 @@ class MyMenu extends HTMLElement {
     li {
       position: relative;
       display: flex;
+      height: 20px;
+      line-height: 20px;
+      .file-icon {
+        margin-right: 6px;
+        align-self: center;
+      }
       a {
         text-decoration: none;
         color: var(--link-color);
         display: flex;
         &:hover {
           color: rgb(var(--link-color-rgb) / .5);
-          svg path {
+          svg:not(.file-icon) path {
             fill: rgb(var(--link-color-rgb) / .5);
           }
         }
       }
       button:has(svg) {
         margin-left: 6px;
+        transform: translateY(-2px);
       }
       .submenu {
         position: absolute;
@@ -68,6 +75,7 @@ class MyMenu extends HTMLElement {
       position: absolute;
       right: -20px;
       color: #999;
+      height: 20px;
     }
   }
   @media screen and (max-width: 640px) {
@@ -123,6 +131,14 @@ class MyMenu extends HTMLElement {
     }
   }
 
+  #_getFileIcon(menu) {
+    const option = { color: '#888', size: '18px '}
+    const isFile = menu.path.endsWith('.html')
+    const icon = myUtils.strToDom(isFile ? SVG.file(option) : SVG.folder(option))
+    icon.firstElementChild.classList.add('file-icon')
+    return icon
+  }
+
   /**
    * パンクズリストを設定する
    * @param {String} path 'top.works.xxx.html'
@@ -152,6 +168,8 @@ class MyMenu extends HTMLElement {
         })
       } else {
         titleWrapper.appendChild(document.createTextNode(menu.title))
+
+        li.prepend(this.#_getFileIcon(menu))
       }
 
       if (menu.siblings.length) {
@@ -218,7 +236,6 @@ class MyMenu extends HTMLElement {
     const closeBtn = document.createElement('button')
     closeBtn.append(close)
     closeBtn.addEventListener('click', e => {
-      console.log('click close', header.parentElement)
       e.stopPropagation()
       e.preventDefault()
       header.parentElement.classList.remove('active')
@@ -231,6 +248,7 @@ class MyMenu extends HTMLElement {
       const a = document.createElement('a')
       a.href = `${myUtils.rootPath}${menu.path}`
       a.textContent = menu.title
+      li.appendChild(this.#_getFileIcon(menu))
       li.appendChild(a)
       ul.appendChild(li)
     })

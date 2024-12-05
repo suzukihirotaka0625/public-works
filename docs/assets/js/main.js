@@ -74,6 +74,11 @@ const MENUS = {
             note: 'マークダウンを生成します。'
           }
         }
+      },
+      links: {
+        title: 'Links',
+        path: 'links.html',
+        note: 'よく見る技術系のサイトのリンク先をご紹介します。',
       }
     }
   }
