@@ -51,6 +51,7 @@ ul {
 
 a {
   color: var(--link-color);
+  text-decoration: none;
 }
 
 my-header::part(content) {

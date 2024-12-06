@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>my skills</title>
+    <link rel="shortcut icon" href="./favicon.ico" /> 
+    <link rel="stylesheet" href="./assets/css/main.css" />
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/custom_elements.js" defer></script>
+    <style>
+      #updates {
+        list-style: none;
+        padding: 0;
+        li {
+          padding-block: .75rem;
+          padding-inline: .25rem;
+          border-bottom: 1px solid #ccc;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          &:first-of-type {
+            border-top: 1px solid #ccc;
+          }
+          > .head {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            > span:last-of-type {
+              display: flex;
+              align-items: center;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              background-color: #f1f1f1;
+              font-size: .8rem;
+              padding: 0 6px;
+              height: 22px;
+            }
+          }
+          > .detail {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <my-header>
+      <my-menu slot="menu"></my-menu>
+    </my-header>
+    <main>
+      <div class="content">
+        <section>
+          <page-list></page-list>
+        </section>
+        <section>
+          <ul id="updates"></ul>
+        </section>
+      </div>
+    </main>
+    <footer is="my-footer"></footer>
+    <script>
+      const getPageList = () => {
+        const pageList = []
+
+        const parsePages = (menu, breadcrumb = [], paths = []) => {
+          Object.entries(menu).forEach(([key, _menu]) => {
+            if (_menu.path.endsWith('.html') && _menu.createdAt) {
+              pageList.push({
+                ..._menu,
+                breadcrumb: breadcrumb.join(' / '),
+                path: [...paths, _menu.path].join('/')
+              })
+            }
+            if (_menu.children) {
+              parsePages(
+                _menu.children,
+                _menu.path ? [...breadcrumb, _menu.title] : [],
+                _menu.path ? [...paths, _menu.path] : []
+              )
+            }
+          })
+        }
+
+        parsePages(MENUS)
+
+        const getDate = a => 'updatedAt' in a ? a.updatedAt : a.createdAt
+        const compare = (a, b) => a === b ? 0 : a < b ? 1 : -1
+        return pageList.sort((a, b) => compare(getDate(a), getDate(b))).slice(0, 10)
+      }
+
+      const createPageElement = (page) => {
+        const li = document.createElement('li')
+        const head = document.createElement('div')
+        head.classList.add('head')
+        const date = document.createElement('span')
+        const isNew = !('updatedAt' in page && page.updatedAt > page.createdAt)
+        date.textContent = isNew ? page.createdAt : page.updatedAt
+        const breadcrumb = document.createElement('span')
+        breadcrumb.innerHTML = page.breadcrumb || SVG.home({ size: '16px' })
+        head.append(date)
+        head.append(breadcrumb)
+        const a = document.createElement('a')
+        a.href = `${myUtils.rootPath}/${page.path}`
+        a.textContent = page.title
+        li.append(head)
+        const detail = document.createElement('div')
+        detail.classList.add('detail')
+        detail.append(myUtils.strToDom(SVG.file({ size: '18px', color: '#999' })))
+        detail.append(a)
+        detail.append(document.createTextNode(`を${isNew ? '追加' : '更新'}しました`))
+        li.append(detail)
+        return li
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+ 
+        const pageList = getPageList()
+
+        const fragment = document.createDocumentFragment()
+
+        pageList.forEach(page => {
+          fragment.append(createPageElement(page))
+        })
+
+        document.getElementById('updates').append(fragment)
+      })
+    </script>
+  </body>
+</html>

@@ -35,14 +35,14 @@ class MyMenu extends HTMLElement {
       }
       button:has(svg) {
         margin-left: 6px;
-        transform: translateY(-2px);
+        transform: translateY(-1px);
       }
       .submenu {
         position: absolute;
         z-index: 1;
         box-sizing: border-box;
         padding: 8px;
-        top: calc(100% - 4px);
+        top: calc(100% - 2px);
         left: var(--submenu-left, 0);
         right: var(--submenu-right, auto);
         min-width: max(200px, 100%);

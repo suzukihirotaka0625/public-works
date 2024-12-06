@@ -15,12 +15,16 @@ const MENUS = {
           me: {
             title: '自分について',
             path: 'me.html',
-            note: '自分の経歴・スキル・希望について'
+            note: '自分の経歴・スキル・希望について',
+            createdAt: '2024-11-25',
+            updatedAt: '2024-11-25',
           },
           site: {
             title: 'このサイトについて',
             path: 'site.html',
-            note: 'このサイトの目的、使用されている技術について'
+            note: 'このサイトの目的、使用されている技術について',
+            createdAt: '2024-12-01',
+            updatedAt: '2024-12-01',
           }
         }
       },
@@ -32,7 +36,9 @@ const MENUS = {
           breadcrumb: {
             title: 'パンクズリスト',
             path: 'breadcrumb.html',
-            note: 'フォルダ階層をパンクズリストで表示<br/>オーバーフローする場合は中央の階層を省略表示にして、ポップアップで省略した階層を表示する。'
+            note: 'フォルダ階層をパンクズリストで表示<br/>オーバーフローする場合は中央の階層を省略表示にして、ポップアップで省略した階層を表示する。',
+            createdAt: '2024-12-02',
+            updatedAt: '2024-12-03',
           },
           typescript: {
             title: 'Typescript',
@@ -43,11 +49,15 @@ const MENUS = {
                 title: 'Highchartsの設定',
                 path: 'highcharts.html',
                 note: 'HighChartsのレーダーチャートで、項目ラベルや凡例の位置、テキストサイズなどをデフォルト値と上書きする設定の型定義',
+                createdAt: '2024-12-01',
+                updatedAt: '2024-12-01',
               },
               banners: {
                 title: 'Reactのジェネリクスコンポーネント',
                 path: 'banners.html',
                 note: '通知コンポーネントでバナーを表示します。バナーの型をジェネリクスで表現する。',
+                createdAt: '2024-12-04',
+                updatedAt: '2024-12-04',
               }
             }
           }
@@ -61,12 +71,16 @@ const MENUS = {
           color: {
             title: 'カラーコード変換',
             path: 'color.html',
-            note: 'いろいろなカラーコードの変換を行います。'
+            note: 'いろいろなカラーコードの変換を行います。',
+            createdAt: '2024-11-24',
+            updatedAt: '2024-11-24',
           },
           recursive: {
             title: '再帰構造JSON処理',
             path: 'recursive.html',
-            note: '再帰構造を持つJSONの値チェックや件数カウント、データの編集を行います。'
+            note: '再帰構造を持つJSONの値チェックや件数カウント、データの編集を行います。',
+            createdAt: '2024-11-27',
+            updatedAt: '2024-11-27',
           },
           markdown: {
             title: 'マークダウン生成',
@@ -74,6 +88,12 @@ const MENUS = {
             note: 'マークダウンを生成します。'
           }
         }
+      },
+      update: {
+        title: '更新履歴',
+        path: 'update.html',
+        note: '新着・更新ページ一覧',
+        createdAt: '2024-12-06',
       },
       links: {
         title: 'Links',
