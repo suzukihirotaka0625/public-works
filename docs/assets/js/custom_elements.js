@@ -57,9 +57,8 @@ class MyMenu extends HTMLElement {
           display: none;
         }
         li {
-          width: max-content;
           min-width: 100px;
-          padding: 3px 6px 3px 5px;
+          padding: 6px 8px 6px 7px;
           &:after {
             content: '';
           }
@@ -85,7 +84,6 @@ class MyMenu extends HTMLElement {
         width: calc(100vw - 20px);
         li {
           font-size: 1rem;
-          width: unset;
           padding: .5rem;
         }
         .submenu-header {
