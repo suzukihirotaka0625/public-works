@@ -57,7 +57,8 @@ class MyMenu extends HTMLElement {
           display: none;
         }
         li {
-          min-width: 100px;
+          min-width: 200px;
+          white-space: nowrap;
           padding: 6px 8px 6px 7px;
           &:after {
             content: '';
@@ -338,6 +339,10 @@ class PageList extends HTMLElement {
   h2 {
     margin-block: .5rem;
     font-size: 1.3rem;
+    &.coding {
+      padding: 4px;
+      background: #f1f1f1;
+    }
   }
   h3 {
     margin: 0;
@@ -348,6 +353,24 @@ class PageList extends HTMLElement {
       margin-bottom: 1px;
       path {
         fill: #f1f1ff;
+      }
+    }
+  }
+  .dates {
+    display: flex;
+    gap: 40px;
+    font-size: .8rem;
+    color: #444;
+    > span {
+      display: flex;
+      gap: .5rem;
+      + span {
+        position: relative;
+        &::before {
+          content: '/';
+          position: absolute;
+          left: -22px;
+        }
       }
     }
   }
@@ -413,17 +436,46 @@ class PageList extends HTMLElement {
     if (!path || this.rendered) return
     this.rendered = true
 
+    /**
+     * type
+     * - coding: h2は背景色付きで、noteは非表示。コーディングメインのページで別途詳細を細かく書くため不要。代わりにh2を装飾して目立たせる
+     */
+    const type = this.getAttribute('type')
+
     const menu = myUtils.getCurrentMenu(path)
 
     const pageWrapper = document.createElement('div')
     pageWrapper.classList.add('this-page')
     const pageTitle = document.createElement('h2')
+    if (type) {
+      pageTitle.classList.add(type)
+    }
     pageTitle.textContent = menu.title
     pageWrapper.appendChild(pageTitle)
-    if (menu.note) {
+    if (menu.note && type !== 'coding') {
       const pageNote = document.createElement('p')
+      pageNote.classList.add('note')
       pageNote.innerHTML = menu.note
       pageWrapper.appendChild(pageNote)
+    }
+    if (!menu.children && menu.createdAt) {
+      const dates = document.createElement('p')
+      dates.classList.add('dates')
+
+      const createDateElement = (text, value) => {
+        const span = document.createElement('span')
+        span.append(document.createTextNode(`${text} : `))
+        const cDate = document.createElement('time')
+        cDate.textContent = cDate.dateTime = value
+        span.append(cDate)
+        return span
+      }
+
+      dates.append(createDateElement('公開日', menu.createdAt))
+      if (menu.updatedAt && menu.createdAt !== menu.updatedAt) {
+        dates.append(createDateElement('最終更新日', menu.updatedAt))
+      }
+      pageWrapper.append(dates)
     }
     this.#_root.appendChild(pageWrapper)
 

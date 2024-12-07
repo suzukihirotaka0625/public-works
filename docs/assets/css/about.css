@@ -1,5 +1,6 @@
 li {
-  padding-bottom: .25rem;
+  padding-bottom: .3rem;
+  line-height: 1.8;
 }
 dt {
   color: #444;
@@ -11,8 +12,10 @@ dd {
   padding-block: .5rem;
   margin-left: 1rem;
   margin-bottom: 1rem;
+  line-height: 1.8;
 }
 span.detail {
   display: block;
   font-size: .9rem;
+  line-height: 1.8;
 }
