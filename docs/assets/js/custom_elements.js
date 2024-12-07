@@ -42,7 +42,7 @@ class MyMenu extends HTMLElement {
         z-index: 1;
         box-sizing: border-box;
         padding: 8px;
-        top: calc(100% - 2px);
+        top: calc(100% + 1px);
         left: var(--submenu-left, 0);
         right: var(--submenu-right, auto);
         min-width: max(200px, 100%);
@@ -188,7 +188,7 @@ class MyMenu extends HTMLElement {
             })
 
             // サブメニューの位置調整
-            const parentRect = submenu.parentElement.getBoundingClientRect()
+            const parentRect = submenu.closest('li').getBoundingClientRect()
             if (myUtils.isSp()) {
               // SP
               submenu.style.setProperty('--submenu-left', `${-parentRect.left + 10}px`)
