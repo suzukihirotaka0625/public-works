@@ -155,9 +155,8 @@ class MyMenu extends HTMLElement {
       let isA = false
       const linkColor = myUtils.rootStyle.getPropertyValue('--link-color')
       if (i < menus.length - 1) {
-        const a = document.createElement('a')
+        const a = myUtils.$('a', { attrs: { href: `${myUtils.rootPath}${menu.path}` } })
         titleWrapper = a
-        a.href = `${myUtils.rootPath}${menu.path}`
         li.appendChild(a)
         isA = true
       }
@@ -217,6 +216,8 @@ class MyMenu extends HTMLElement {
 
       this.#_root.appendChild(li)
     })
+
+    this.#_writeTitle(menus)
   }
 
   /**
@@ -225,12 +226,10 @@ class MyMenu extends HTMLElement {
    * @returns 
    */
   #_createSubMenu(submenus) {
-    const ul = document.createElement('ul')
-    ul.classList.add('submenu')
+    const ul = myUtils.$('ul', { className: 'submenu' })
 
     // 閉じるボタン（SP用）
-    const header = document.createElement('li')
-    header.classList.add('submenu-header')
+    const header = myUtils.$('li', { className: 'submenu-header' })
     const close = myUtils.strToDom(SVG.close({ size: '26px'}))
     const closeBtn = document.createElement('button')
     closeBtn.append(close)
@@ -244,14 +243,15 @@ class MyMenu extends HTMLElement {
 
     submenus.forEach(menu => {
       const li = document.createElement('li')
-      const a = document.createElement('a')
-      a.href = `${myUtils.rootPath}${menu.path}`
-      a.textContent = menu.title
       li.appendChild(this.#_getFileIcon(menu))
-      li.appendChild(a)
+      li.appendChild(myUtils.$('a', { attrs: { href: `${myUtils.rootPath}${menu.path}` }, text: menu.title }))
       ul.appendChild(li)
     })
     return ul
+  }
+
+  #_writeTitle(menus) {
+    document.title = menus.map(menu => menu.title).join(' | ')
   }
 
   closeSubmenu() {
@@ -271,7 +271,7 @@ class MyHeader extends HTMLElement {
 
   static content = `
     <div part="content">
-      <h1>My Skills</h1>
+      <h1>${myUtils.appName}</h1>
       <slot name="menu">メニュー</slot>
     </div>
 `
@@ -444,23 +444,14 @@ class PageList extends HTMLElement {
 
     const menu = myUtils.getCurrentMenu(path)
 
-    const pageWrapper = document.createElement('div')
-    pageWrapper.classList.add('this-page')
-    const pageTitle = document.createElement('h2')
-    if (type) {
-      pageTitle.classList.add(type)
-    }
-    pageTitle.textContent = menu.title
-    pageWrapper.appendChild(pageTitle)
+    const pageWrapper = myUtils.$('div', { className: 'this-page' })
+
+    pageWrapper.appendChild(myUtils.$('h2', { class: type, text: menu.title }))
     if (menu.note && type !== 'coding') {
-      const pageNote = document.createElement('p')
-      pageNote.classList.add('note')
-      pageNote.innerHTML = menu.note
-      pageWrapper.appendChild(pageNote)
+      pageWrapper.appendChild(myUtils.$('p', { className: 'note', html: menu.note }))
     }
     if (!menu.children && menu.createdAt) {
-      const dates = document.createElement('p')
-      dates.classList.add('dates')
+      const dates = myUtils.$('p', { className: 'dates' })
 
       const createDateElement = (text, value) => {
         const span = document.createElement('span')
@@ -485,18 +476,12 @@ class PageList extends HTMLElement {
 
       Object.values(menu.children).forEach(item => {
         const card = document.createElement('div')
-        const cardTitle = document.createElement('h3')
-        const link = document.createElement('a')
-        link.href = item.path
-        cardTitle.textContent = item.title
+        const cardTitle = myUtils.$('h3', { text: item.title })
+        const link = myUtils.$('a', { attrs: { href: item.path }})
         cardTitle.prepend(this.#_getFileIcon(item))
         card.appendChild(cardTitle)
         link.appendChild(card)
-        if (item.note) {
-          const cardNote = document.createElement('p')
-          cardNote.innerHTML = item.note
-          card.appendChild(cardNote)
-        }
+        card.appendChild(myUtils.$('p', { html: item.note }))
   
         childrenWrapper.appendChild(link)
       })

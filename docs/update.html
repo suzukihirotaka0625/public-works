@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>my skills</title>
+    <title></title>
     <link rel="shortcut icon" href="./favicon.ico" /> 
     <link rel="stylesheet" href="./assets/css/main.css" />
     <script src="./assets/js/main.js"></script>
@@ -109,23 +109,17 @@
 
       const createPageElement = (page) => {
         const li = document.createElement('li')
-        const head = document.createElement('div')
-        head.classList.add('head')
-        const date = document.createElement('span')
+        const head = myUtils.$('div', { className: 'head' })
         const isNew = !('updatedAt' in page && page.updatedAt > page.createdAt)
-        date.textContent = isNew ? page.createdAt : page.updatedAt
-        const breadcrumb = document.createElement('span')
-        breadcrumb.innerHTML = page.breadcrumb || SVG.home({ size: '16px' })
-        head.append(date)
-        head.append(breadcrumb)
-        const a = document.createElement('a')
-        a.href = `${myUtils.rootPath}/${page.path}`
-        a.textContent = page.title
+
+        head.append(myUtils.$('span', { text: isNew ? page.createdAt : page.updatedAt }))
+        head.append(myUtils.$('span', { html: page.breadcrumb || SVG.home({ size: '16px' }) }))
         li.append(head)
-        const detail = document.createElement('div')
-        detail.classList.add('detail')
+        const detail = myUtils.$('div', { className: 'detail' })
         detail.append(myUtils.strToDom(SVG.file({ size: '18px', color: '#999' })))
-        detail.append(a)
+        detail.append(myUtils.$('a', {
+          attrs: { href: `${myUtils.rootPath}/${page.path}` }, text: page.title
+        }))
         detail.append(document.createTextNode(`を${isNew ? '追加' : '更新'}しました`))
         li.append(detail)
         return li

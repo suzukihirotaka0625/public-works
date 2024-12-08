@@ -76,24 +76,16 @@ class RadioGroup extends HTMLElement {
 
     items.forEach(item => {
       const label = document.createElement('label')
-      const radio = document.createElement('input')
-      radio.setAttribute('part', 'radio input')
-      radio.type = 'radio'
-      radio.name = name
-      radio.value = item.value
+      const radio = myUtils.$('input', {
+        attrs: { type: 'radio', name, value: item.value, part: 'radio input' }
+      })
       if (item.checked) {
         radio.checked = true
       }
       // changeイベント
       radio.addEventListener('change', this.#_fireChangeEvent)
       label.append(radio)
-  
-      const span = document.createElement('span')
-      if (item.part) {
-        span.setAttribute('part', item.part)
-      }
-      span.textContent = item.label
-      label.append(span)
+      label.append(myUtils.$('span', { attrs: { part: item.part }, text: item.label }))
       this.#_root.append(label)
     })
   }

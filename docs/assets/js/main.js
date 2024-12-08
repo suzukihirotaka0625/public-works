@@ -173,11 +173,39 @@ const myUtils = (() => {
 
   const rootStyle = getComputedStyle(document.querySelector(':root'))
 
+  const createElement = (tag, { attrs, text, html, className, classes } = {}) => {
+    const elm = document.createElement(tag)
+
+    if (className) {
+      elm.classList.add(className)
+    } else if (classes) {
+      elm.classList.add(...classes)
+    }
+
+    Object.entries(attrs ?? {}).forEach(([key, value]) => {
+      if (value) {
+        elm.setAttribute(key, value)
+      }
+    })
+
+    if (text) {
+      elm.textContent = text
+    }
+
+    if (html) {
+      elm.innerHTML = html
+    }
+
+    return elm
+  }
+
   return {
+    appName: 'My Skills',
     prepareCustomElement,
     parseMenu,
     getCurrentMenu,
     strToDom,
+    $: createElement,
     rootPath: location.host.indexOf('localhost') === -1 ? '/public-works' : '/lolipop/public-works/docs',
     rootStyle,
     isSp: () => rootStyle.getPropertyValue('--is-sp') === '1'
