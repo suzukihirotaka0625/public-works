@@ -353,8 +353,6 @@ class WebBrowser extends HTMLElement {
 
     const host = this.shadowRoot.styleSheets[0].cssRules[0]
 
-    console.log(this.shadowRoot.styleSheets[0])
-
     const [width, height] = [this.getAttribute('view-width'), this.getAttribute('view-height')]
     if (width) {
       host.style.setProperty('--web-view-width', width)
