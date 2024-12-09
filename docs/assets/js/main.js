@@ -284,4 +284,3 @@ document.addEventListener('DOMContentLoaded', () => {
     pageList?.setAttribute('path', path)
   }
 })
-

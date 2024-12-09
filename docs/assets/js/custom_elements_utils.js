@@ -351,7 +351,9 @@ class WebBrowser extends HTMLElement {
     this.#_addressBar = this.shadowRoot.querySelector('.address-bar')
     this.#_webView = this.shadowRoot.querySelector('.web-view')
 
-    const host = this.shadowRoot.styleSheets[0].rules[0]
+    const host = this.shadowRoot.styleSheets[0].cssRules[0]
+
+    console.log(this.shadowRoot.styleSheets[0])
 
     const [width, height] = [this.getAttribute('view-width'), this.getAttribute('view-height')]
     if (width) {

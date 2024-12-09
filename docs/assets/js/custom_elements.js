@@ -442,14 +442,21 @@ class PageList extends HTMLElement {
      */
     const type = this.getAttribute('type')
 
+    // 表示しない要素 title, note
+    const ignores = (this.getAttribute('ignores') ?? '').split(',')
+
     const menu = myUtils.getCurrentMenu(path)
 
     const pageWrapper = myUtils.$('div', { className: 'this-page' })
 
-    pageWrapper.appendChild(myUtils.$('h2', { class: type, text: menu.title }))
-    if (menu.note && type !== 'coding') {
+    if (!ignores.includes('title')) {
+      pageWrapper.appendChild(myUtils.$('h2', { className: type, text: menu.title }))
+    }
+
+    if (menu.note && type !== 'coding' && !ignores.includes('note')) {
       pageWrapper.appendChild(myUtils.$('p', { className: 'note', html: menu.note }))
     }
+
     if (!menu.children && menu.createdAt) {
       const dates = myUtils.$('p', { className: 'dates' })
 
