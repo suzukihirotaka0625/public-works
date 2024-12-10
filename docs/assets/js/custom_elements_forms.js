@@ -49,7 +49,7 @@ class RadioGroup extends HTMLElement {
   constructor() {
     super()
 
-    this.#_root = myUtils.prepareCustomElement(RadioGroup, this.attachShadow({mode: "closed"}))
+    this.#_root = myUtils.prepareCustomElement(RadioGroup, this.attachShadow({mode: "open"}))
   }
 
   /**
@@ -88,6 +88,10 @@ class RadioGroup extends HTMLElement {
       label.append(myUtils.$('span', { attrs: { part: item.part }, text: item.label }))
       this.#_root.append(label)
     })
+  }
+
+  get currentValue() {
+    return this.shadowRoot.querySelector('input:checked')?.value
   }
 }
 

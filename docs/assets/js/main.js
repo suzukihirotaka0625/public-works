@@ -82,10 +82,11 @@ const MENUS = {
             createdAt: '2024-11-27',
             updatedAt: '2024-11-27',
           },
-          markdown: {
-            title: 'マークダウン生成',
-            path: 'markdown.html',
-            note: 'マークダウンを生成します。'
+          table: {
+            title: 'TSVをテーブルに変換',
+            path: 'table.html',
+            note: 'TSVをマークダウンやHTMLのテーブルに変換します。',
+            createdAt: '2024-12-11',
           }
         }
       },

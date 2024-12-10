@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title></title>
+    <link rel="shortcut icon" href="../favicon.ico" /> 
+    <link rel="stylesheet" href="../assets/css/main.css" />
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/custom_elements.js" defer></script>
+    <script src="../assets/js/custom_elements_forms.js" defer></script>
+    <style>
+      section:not(:first-of-type) + section {
+        margin-top: 2rem;
+      }
+      textarea {
+        width: 100%;
+        margin: 10px 0;
+        font-family: monospace;
+        height: 30vh;
+      }
+      div:has(> button) {
+        display: flex;
+        justify-content: flex-end;
+      }
+      @media screen and (max-width: 640px)  {
+        #action {
+          flex-grow: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <my-header>
+      <my-menu slot="menu"></my-menu>
+    </my-header>
+    <main>
+      <div class="content">
+        <section>
+          <page-list></page-list>
+        </section>
+        <section>
+          <h3>TSVデータ</h3>
+          <div class="block">
+            スプレッドシートなどからコピーしたタブ区切りのデータを貼り付けてください。
+          </div>
+          <textarea id="in"></textarea>
+        </section>
+        <section>
+          <h3>変換後のフォーマットを選択</h3>
+          <div class="block">
+            <radio-group id="output-format"></radio-group>
+          </div>
+        </section>
+        <section>
+          <div class="block">
+            <button id="action">変換実行</button>
+          </div>
+        </section>
+        <section>
+          <h3>出力結果</h3>
+          <textarea id="out"></textarea>
+        </section>
+      </div>
+    </main>
+    <footer is="my-footer"></footer>
+    <script>
+      const formatSettings = {
+        name: 'format',
+        items: [
+          { value: 'markdown', label: 'マークダウン', checked: true },
+          { value: 'html', label: 'HTML' }
+        ]
+      }
+
+      window.addEventListener('DOMContentLoaded', event => {
+        const radioGroup = document.getElementById('output-format')
+        radioGroup.render(formatSettings)
+
+        const input = document.getElementById('in')
+        const output = document.getElementById('out')
+
+        const divider = '\t'
+
+        const writeMarkdownTable = lines => {
+          output.value = "";
+          lines.forEach((value, i) => {
+            const values = value.split(divider)
+            output.value += `| ${values.join(' | ')} |\n`
+            if (i === 0) {
+              output.value += `|${new Array(values.length).fill(' -- ').join('|')}|\n`
+            }
+          })
+        }
+        const writeHtmlTable = lines => {
+          output.value = '<table>\n';
+          lines.forEach((value, i) => {
+            const mapData = i === 0 ? v => `<th>${v}</th>` : v => `<td>${v}</td>`
+            const values = value.split(divider)
+              .map(mapData)
+              .join('')
+            output.value += `  <tr>${values}</tr>\n`
+          });
+          output.value += '</table>'
+        }
+
+        document.getElementById('action').addEventListener('click', () => {
+          const lines = input.value.split('\n').filter(v => v.trim().length)
+
+          if (lines.length === 0) return
+
+          if (radioGroup.currentValue === 'markdown') {
+            writeMarkdownTable(lines)
+          } else {
+            writeHtmlTable(lines)
+          }
+        })
+      })
+    </script>
+  </body>
+</html>
