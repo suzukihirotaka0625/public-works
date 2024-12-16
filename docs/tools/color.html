@@ -82,117 +82,162 @@
       }
 
       window.addEventListener('DOMContentLoaded', (event) => {
+
         const radioFormat = document.getElementById('radio-format')
         radioFormat.render(formatSettings)
 
         let format = 'default'
 
-        const [c1, c2, c3] = [1, 2, 3].map(no => ({
-          in: document.getElementById(`c${no}_in`),
-          out: document.getElementById(`c${no}_out`),
-          btn: document.getElementById(`c${no}_btn`)
-        }))
-        const settings = {
-          default: {
-            delimiter: ' ',
-            delimiterOut: ' ',
-            c1: {},
-            c2: {
+        class ColorConvertor {
+
+          static commonSettings = {
+            default: {
+              delimiter: ' ',
+              delimiterOut: ' ',
+            },
+            legacy: {
+              delimiter: ',',
+              delimiterOut: ', ',
+            }
+          }
+
+          settings = { default: {}, legacy: {} }
+
+          constructor(no) {
+            this.in = document.getElementById(`c${no}_in`),
+            this.out = document.getElementById(`c${no}_out`),
+            this.btn = document.getElementById(`c${no}_btn`)
+
+            this.btn.addEventListener('click', this.convert.bind(this))
+          }
+
+          static validateColor = c => c >= 0 && c <= 255
+
+          getSettings() {
+            return {
+              ...ColorConvertor.commonSettings[format],
+              ...this.settings[format]
+            }
+          }
+
+          convert() {
+            throw new Error('unimplemented')
+          }
+
+          changePlaceHolder() {
+            const placeholder = this.settings[format]?.placeholder
+            if (placeholder) {
+              this.in.placeholder = placeholder
+            }
+          }
+        }
+
+        // 16進数 -> 10進数
+        class ColorConvert16to10 extends ColorConvertor {
+
+          constructor() {
+            super('1')
+          }
+
+          convert() {
+            const settings = this.getSettings()
+            // 入力値
+            let inputValue =this.in.value.replace('#', '')
+            // validate
+            if (!/^[\da-fA-F]+$/.test(inputValue)) return
+            if (![3, 6].includes(inputValue.length)) return
+            inputValue = inputValue.length === 3 ? inputValue.replace(/(.)(.)(.)/, '$1$1$2$2$3$3') : inputValue
+
+            const outputValue = inputValue.match(/.{2}/g).map(v => parseInt(v, 16)).join(settings.delimiterOut)
+            this.out.value = outputValue
+            this.out.nextElementSibling.style.background = `#${inputValue}`
+          }
+        }
+
+        // 10進数 -> 16進数
+        class ColorConvert10to16 extends ColorConvertor {
+
+          settings = {
+            default: {
               placeholder: '255 218 27',
-              getInputValue: () => c2.in.value.replace(/\s+/g, ' '),
+              getInputValue() { return this.in.value.replace(/\s+/g, ' ') },
               validate: (inputValue) => /^\d{1,3}( \d{1,3})*$/.test(inputValue)
             },
-            c3: {
+            legacy: {
+              placeholder: '255, 218, 27',
+              getInputValue() { return this.in.value.replace(/\s/g, '') },
+              validate: (inputValue) => /^\d{1,3}(,\d{1,3})*$/.test(inputValue)
+            }
+          }
+
+          constructor() {
+            super('2')
+          }
+
+          convert() {
+            const settings = this.getSettings()
+            // 入力値
+            let inputValue = settings.getInputValue.call(this)
+            if (!settings.validate(inputValue)) return
+            // rgbの配列
+            const colors = inputValue.split(settings.delimiter).map(v => Number(v))
+            // rgbのバリデーション
+            if (colors.length !== 3 || !colors.every(ColorConvertor.validateColor)) return
+
+            const outputValue = colors.map(v => v.toString(16)).join('')
+            this.out.value = `#${outputValue}`
+            this.out.nextElementSibling.style.background = this.out.value
+          }
+        }
+
+        // 10進数 + 透明度 -> 10進数
+        class ColorConvert10plusAlpha extends ColorConvertor {
+
+          settings = {
+            default: {
               placeholder: '255 218 27 / 0.2',
-              getInputValue: () => c3.in.value.replace(/\s+/g, ' '),
+              getInputValue() { return this.in.value.replace(/\s+/g, ' ') },
               validate: (inputValue) => /^\d{1,3}( \d{1,3}){2} ?\/ ?0?\.\d+$/.test(inputValue),
               parseColors: (inputValue) => inputValue.replace(/ ?\/ ?/, ' ').split(' ')
-            }
-          },
-          legacy: {
-            delimiter: ',',
-            delimiterOut: ', ',
-            c1: {},
-            c2: {
-              placeholder: '255, 218, 27',
-              getInputValue: () => c2.in.value.replace(/\s/g, ''),
-              validate: (inputValue) => /^\d{1,3}(,\d{1,3})*$/.test(inputValue)
             },
-            c3: {
+            legacy: {
               placeholder: '255, 218, 27, 0.2',
-              getInputValue: () => c3.in.value.replace(/\s/g, ''),
+              getInputValue() { return this.in.value.replace(/\s/g, '') },
               validate: (inputValue) => /^(\d{1,3},){1,3}(0?.\d{1,3})*$/.test(inputValue),
               parseColors: (inputValue) => inputValue.split(',')
             }
           }
-        }
 
-        const getSetting = (type) => {
-          return {
-            delimiter: settings[format].delimiter,
-            delimiterOut: settings[format].delimiterOut,
-            ...settings[format][type]
+          constructor() {
+            super('3')
+          }
+
+          convert() {
+            const settings = this.getSettings()
+            // 入力値
+            let inputValue = settings.getInputValue.call(this)
+            if (!settings.validate(inputValue)) return
+            // rgb + aの配列
+            const colors = settings.parseColors(inputValue).map(v => Number(v.startsWith('.') ? `0${v}` : v))
+            if (colors.length > 4) return
+            const opacity = colors.pop()
+            // rgbのバリデーション
+            if ( !colors.every(ColorConvertor.validateColor)) return
+            // 透明度のバリデーション
+            if (opacity < 0 || opacity >= 1) return
+
+            const outputValue = colors.map(c => Math.round(c + (255 - c) * (1 - opacity))).join(settings.delimiterOut)
+            this.out.value = outputValue
+            this.out.nextElementSibling.style.background = `rgb(${outputValue})`
           }
         }
+
+        const convertors = [new ColorConvert10to16(), new ColorConvert16to10(), new ColorConvert10plusAlpha()]
 
         // フォーマット選択
         radioFormat.addEventListener('changed', e => {
           format = e.detail.value
-          c2.in.placeholder = settings[format].c2.placeholder
-          c3.in.placeholder = settings[format].c3.placeholder
-        })
-
-        const validateColor = c => c >= 0 && c <= 255
-
-        // 16進数 -> 10進数
-        c1.btn.addEventListener('click', () => {
-          const setting = getSetting('c1')
-          // 入力値
-          let inputValue =c1.in.value.replace('#', '')
-          // validate
-          if (!/^[\da-fA-F]+$/.test(inputValue)) return
-          if (![3, 6].includes(inputValue.length)) return
-          inputValue = inputValue.length === 3 ? inputValue.replace(/(.)(.)(.)/, '$1$1$2$2$3$3') : inputValue
-
-          const outputValue = inputValue.match(/.{2}/g).map(v => parseInt(v, 16)).join(setting.delimiterOut)
-          c1.out.value = outputValue
-          c1.out.nextElementSibling.style.background = `#${inputValue}`
-        })
-
-        // 10進数 -> 16進数
-        c2.btn.addEventListener('click', () => {
-          const setting = getSetting('c2')
-          // 入力値
-          let inputValue = setting.getInputValue()
-          if (!setting.validate(inputValue)) return
-          // rgbの配列
-          const colors = inputValue.split(setting.delimiter).map(v => Number(v))
-          // rgbのバリデーション
-          if (colors.length !== 3 || !colors.every(validateColor)) return
-
-          const outputValue = colors.map(v => v.toString(16)).join('')
-          c2.out.value = `#${outputValue}`
-          c2.out.nextElementSibling.style.background = c2.out.value
-        })
-
-        // 10進数 + 透明度 -> 10進数
-        c3.btn.addEventListener('click', () => {
-          const setting = getSetting('c3')
-          // 入力値
-          let inputValue = setting.getInputValue()
-          if (!setting.validate(inputValue)) return
-          // rgb + aの配列
-          const colors = setting.parseColors(inputValue).map(v => Number(v.startsWith('.') ? `0${v}` : v))
-          if (colors.length > 4) return
-          const opacity = colors.pop()
-          // rgbのバリデーション
-          if ( !colors.every(validateColor)) return
-          // 透明度のバリデーション
-          if (opacity < 0 || opacity >= 1) return
-
-          const outputValue = colors.map(c => Math.round(c + (255 - c) * (1 - opacity))).join(setting.delimiterOut)
-          c3.out.value = outputValue
-          c3.out.nextElementSibling.style.background = `rgb(${outputValue})`
+          convertors.forEach(convertor => convertor.changePlaceHolder())
         })
       })
     </script>

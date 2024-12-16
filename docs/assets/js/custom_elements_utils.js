@@ -233,7 +233,7 @@ class HelpDialog extends HTMLElement {
     document.addEventListener('touchmove', this.noscroll, {passive: false});
     document.addEventListener('wheel', this.noscroll, {passive: false});
   }
-  
+
   unsetNoScroll(){
     if (this.scrollable) return
     document.removeEventListener('touchmove', this.noscroll);

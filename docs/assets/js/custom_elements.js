@@ -351,9 +351,6 @@ class PageList extends HTMLElement {
     gap: 6px;
     .file-icon {
       margin-bottom: 1px;
-      path {
-        fill: #f1f1ff;
-      }
     }
   }
   .dates {
@@ -457,7 +454,7 @@ class PageList extends HTMLElement {
       pageWrapper.appendChild(myUtils.$('p', { className: 'note', html: menu.note }))
     }
 
-    if (!menu.children && menu.createdAt) {
+    if (!menu.children && menu.createdAt  && !ignores.includes('dates')) {
       const dates = myUtils.$('p', { className: 'dates' })
 
       const createDateElement = (text, value) => {
